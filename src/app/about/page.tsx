@@ -65,7 +65,7 @@ export default function AboutPage() {
         <div className="relative w-full h-svh mx-auto [clip-path:url(#my-clip-path)] bg-[#282a2c]">
           <Image
             src="/Images/About/About_Main_Img.png"
-            alt="A portrait of Nikhil Dhakad"
+            alt="A portrait of Zaheer Khan"
             fill
             className="object-cover"
             priority
