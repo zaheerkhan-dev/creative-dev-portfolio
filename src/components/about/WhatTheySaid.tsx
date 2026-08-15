@@ -158,17 +158,19 @@ export default function WhatTheySaid({
     return (
       <div className={`flex flex-wrap gap-x-[0.3em] gap-y-[0.05em] ${className}`}>
         {words.map((word, wIdx) => {
-          const chars = word.split("");
+          // Use Array.from to correctly handle multi-byte Unicode/emojis without breaking surrogate pairs
+          const chars = Array.from(word);
           const center = (chars.length - 1) / 2;
           return (
             <span key={wIdx} className="inline-flex overflow-hidden py-0.5">
               {chars.map((char, cIdx) => {
                 const dist = Math.abs(cIdx - center);
+                const isEmoji = /\p{Extended_Pictographic}/u.test(char);
                 return (
                   <span
                     key={cIdx}
                     data-delay={baseDelay + 0.045 * dist}
-                    className="char-span inline-block"
+                    className={`char-span inline-block ${isEmoji ? "font-sans not-italic text-[0.8em] align-middle" : ""}`}
                   >
                     {char}
                   </span>

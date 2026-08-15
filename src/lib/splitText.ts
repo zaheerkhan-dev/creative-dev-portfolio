@@ -62,8 +62,8 @@ export class SplitText {
         wordSpan.style.textTransform = "inherit";
         wordSpan.style.letterSpacing = "inherit";
 
-        for (let i = 0; i < wordText.length; i++) {
-          const char = wordText[i];
+        const charList = Array.from(wordText);
+        charList.forEach((char) => {
           const charSpan = document.createElement("span");
           charSpan.className = `${charsClass} inline-block relative`;
           charSpan.setAttribute("aria-hidden", "true");
@@ -75,7 +75,7 @@ export class SplitText {
           charSpan.textContent = char;
           wordSpan.appendChild(charSpan);
           charsArr.push(charSpan);
-        }
+        });
 
         el.appendChild(wordSpan);
         wordsArr.push(wordSpan);
