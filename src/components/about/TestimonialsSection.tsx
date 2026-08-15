@@ -32,14 +32,14 @@ export const testimonialsData: TestimonialItem[] = [
   {
     id: "2",
     quote:
-      "Zaheer is a great developer. The quality of his work was amazing and he delivered very fast. He recommended and debated changes with me and how to best implement the features. Overall great work all around, I would love to work again on other projects.",
+      "Zaheer is an exceptionally reliable and fast developer. How he leverages AI to build complex web applications at 10x speed is just insane. The quality and polish blew me away.",
     backgroundQuote:
-      "I'm actually his brother... he literally forced me to write this 5-star review at gunpoint.",
-    name: "Kushal Thakur",
+      "I am literally his brother... he forced me to write this 5-star review at gunpoint.",
+    name: "Amir Khan",
     role: "Client",
     company: "Upwork",
-    websiteUrl: "https://www.upwork.com/freelancers/~01290115e797943d08?mp_source=share",
-    avatar: "/Images/About/Kushal_Client_Img.avif",
+    websiteUrl: "https://github.com/zaheerkhan-dev",
+    avatar: "/Images/About/AMIR_KHAN_Client_Img.png",
   },
   {
     id: "3",
