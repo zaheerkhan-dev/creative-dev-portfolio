@@ -37,7 +37,7 @@ const contactSocialLinks: SocialLinkData[] = [
   },
   {
     name: "GitHub",
-    url: "https://github.com/Tech-Nickkk",
+    url: "https://github.com/zaheerkhan-dev",
     viewBox: "0 0 24 24",
     svgPath: (
       <path
@@ -119,10 +119,10 @@ export default function ContactFooter() {
             Direct Contact
           </span>
           <a
-            href="mailto:nikhildhakad712@gmail.com"
+            href="mailto:izak3x@gmail.com"
             className="group relative inline-block text-foreground hover:text-orange transition-colors duration-300 font-semibold pb-0.5"
           >
-            nikhildhakad712@gmail.com
+            izak3x@gmail.com
             <span className="absolute bottom-0 left-0 w-full h-[1.5px] bg-orange origin-right scale-x-0 transition-transform duration-300 ease-out group-hover:origin-left group-hover:scale-x-100" />
           </a>
         </div>
