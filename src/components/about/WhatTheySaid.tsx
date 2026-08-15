@@ -43,8 +43,8 @@ export const defaultTestimonials: Testimonial[] = [
     backgroundQuote:
       "I am literally his brother... he forced me to write this 5-star review at gunpoint.",
     name: "Amir Khan",
-    role: "Client",
-    company: "Upwork",
+    role: "President of Success",
+    company: "Expensive Lifestyle Inc",
     websiteUrl: "https://github.com/zaheerkhan-dev",
     avatar: "/Images/About/AMIR_KHAN_Client_Img.png",
   },
