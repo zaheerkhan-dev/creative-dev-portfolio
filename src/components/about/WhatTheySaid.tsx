@@ -90,14 +90,14 @@ export default function WhatTheySaid({
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  // Autoplay Timer (5s)
+  // Autoplay Timer (8s)
   useEffect(() => {
     if (!isPlaying || modalItem !== null) return;
     const interval = setInterval(() => {
       setDirection("next");
       setPrevIndex(currentIndex);
       setCurrentIndex((prev) => (prev + 1) % total);
-    }, 5000);
+    }, 8000);
     return () => clearInterval(interval);
   }, [isPlaying, modalItem, currentIndex, total]);
 
