@@ -1,4 +1,4 @@
-# 🌌 Nikhil Dhakad — Creative Developer Portfolio
+# 🌌 Creative Developer Portfolio
 
 An award-winning caliber, high-performance creative developer portfolio built with **Next.js 15 (App Router)**, **Three.js & React Three Fiber**, **GSAP (ScrollTrigger & SplitText)**, **Lenis Smooth Scroll**, and **Tailwind CSS**.
 
@@ -95,8 +95,8 @@ nikhildhakad-portfolio/
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/zaheerkhan-dev/nikhildhakad-portfolio.git
-cd nikhildhakad-portfolio
+git clone https://github.com/zaheerkhan-dev/creative-dev-portfolio.git
+cd creative-dev-portfolio
 ```
 
 ### 2. Install Dependencies
