@@ -26,7 +26,7 @@ const contactSocialLinks: SocialLinkData[] = [
   },
   {
     name: "Linkedin",
-    url: "https://www.linkedin.com/in/nikhil-dhakad",
+    url: "https://www.linkedin.com/in/zakzaheerkhan/",
     viewBox: "0 0 24 24",
     svgPath: (
       <path
