@@ -23,7 +23,7 @@ export default function HeroSection() {
       {/* Center Top Title with mix-blend-difference */}
       <div className="relative z-10 text-center mix-blend-difference">
         <h1 className="tracking-[.6rem] md:mt-[5.5rem] mt-[8rem] uppercase text-[.8rem] md:text-[1rem] font-bold text-foreground font-barlow-condensed">
-          Nikhil Dhakad
+          Zaheer Khan
         </h1>
       </div>
 
