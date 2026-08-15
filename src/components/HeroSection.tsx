@@ -12,7 +12,7 @@ export default function HeroSection() {
       <div aria-hidden="true" className="absolute inset-0 z-0 overflow-hidden">
         <Image
           src="/Images/Home/Home_Image.png"
-          alt="A stylized portrait of Nikhil Dhakad, the portfolio owner."
+          alt="Creative developer portrait"
           fill
           sizes="100vw"
           className="object-cover md:scale-120 translate-y-8 md:translate-y-16"
