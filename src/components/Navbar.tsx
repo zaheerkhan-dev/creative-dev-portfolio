@@ -308,9 +308,10 @@ export default function Navbar() {
           <svg viewBox="0 0 500 500" className="w-full h-full fill-none">
             <path
               ref={logoPathRef}
-              d="M 201.474 284.661 C 171.385 136.247 338.16 136.944 308.88 284.661"
-              className="fill-none stroke-foreground stroke-[48]"
+              d="M 175 165 L 325 165 L 175 335 L 325 335"
+              className="fill-none stroke-foreground stroke-[50]"
               strokeLinecap="round"
+              strokeLinejoin="round"
             />
           </svg>
         </div>
