@@ -20,19 +20,19 @@ export const testimonialsData: TestimonialItem[] = [
   {
     id: "1",
     quote:
-      "Working with Nikhil was such a pleasure. He has delivered exceptional outcomes and met every milestone on time. I could not recommend Nikhil enough!",
+      "Working with Zaheer was the best investment we made for Staurga this year. The website launched smoothly and we started getting compliments and customer inquiries from day one.",
     backgroundQuote:
-      "After 69 rounds of feedback and 67 awkward Zoom calls, he finally got it right.",
-    name: "Lynn & Hala",
-    role: "Founders",
-    company: "MATCHITT",
-    websiteUrl: "https://www.matchitt.com/",
-    avatar: "/Images/About/Lynn_Hala_Client_Img.png",
+      "Zaheer did the entire project via text because he is too shy to get on a Zoom call 😂",
+    name: "Shahida Zia",
+    role: "Founder",
+    company: "Staurga",
+    websiteUrl: "https://staurga.com/",
+    avatar: "/Images/About/Shahida_Zia_Client_Img.png",
   },
   {
     id: "2",
     quote:
-      "Nikhil is a great developer. The quality of his work was amazing and he delivered very fast. He recommended and debated changes with me and how to best implement the features. Overall great work all around, I would love to work again on other projects.",
+      "Zaheer is a great developer. The quality of his work was amazing and he delivered very fast. He recommended and debated changes with me and how to best implement the features. Overall great work all around, I would love to work again on other projects.",
     backgroundQuote:
       "I'm actually his brother... he literally forced me to write this 5-star review at gunpoint.",
     name: "Kushal Thakur",
@@ -44,7 +44,7 @@ export const testimonialsData: TestimonialItem[] = [
   {
     id: "3",
     quote:
-      "I couldn't be happier with the results. I hired Nikhil on Upwork to build our organization's flagship website. From the very first call, he demonstrated exceptional professionalism and deep expertise in modern web development. The design is sleek, professional, and perfectly on-brand with flawless responsiveness across every device.",
+      "I couldn't be happier with the results. I hired Zaheer on Upwork to build our organization's flagship website. From the very first call, he demonstrated exceptional professionalism and deep expertise in modern web development. The design is sleek, professional, and perfectly on-brand with flawless responsiveness across every device.",
     backgroundQuote:
       "He wrote this entire paragraph himself and just asked me to copy-paste it into Upwork.",
     name: "Ziad",

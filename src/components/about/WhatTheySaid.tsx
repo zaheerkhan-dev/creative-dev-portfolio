@@ -25,21 +25,21 @@ export const defaultTestimonials: Testimonial[] = [
   {
     id: "1",
     quote:
-      "Working with Nikhil was such a pleasure. He has delivered exceptional outcomes and met every milestone on time. I could not recommend Nikhil enough!",
+      "Working with Zaheer was the best investment we made for Staurga this year. The website launched smoothly and we started getting compliments and customer inquiries from day one.",
     backgroundQuote:
-      "After 69 rounds of feedback and 67 awkward Zoom calls, he finally got it right.",
-    name: "Lynn & Hala",
-    role: "Founders",
-    company: "MATCHITT",
-    websiteUrl: "https://www.matchitt.com/",
-    avatar: "/Images/About/Lynn_Hala_Client_Img.png",
+      "Zaheer did the entire project via text because he is too shy to get on a Zoom call 😂",
+    name: "Shahida Zia",
+    role: "Founder",
+    company: "Staurga",
+    websiteUrl: "https://staurga.com/",
+    avatar: "/Images/About/Shahida_Zia_Client_Img.png",
   },
   {
     id: "2",
     quote:
-      "Nikhil is a great developer. The quality of his work was amazing and he delivered very fast. He recommended and debated changes with me and how to best implement the features. He also understood and completed the work just as defined in the spec. Overall great work all around, I would love to work again on other projects.",
+      "Zaheer is a great developer. The quality of his work was amazing and he delivered very fast. He recommended and debated changes with me and how to best implement the features. He also understood and completed the work just as defined in the spec. Overall great work all around, I would love to work again on other projects.",
     shortQuote:
-      "Nikhil is a great developer. The quality of his work was amazing and he delivered very fast. I would love to work again on other projects.",
+      "Zaheer is a great developer. The quality of his work was amazing and he delivered very fast. I would love to work again on other projects.",
     backgroundQuote:
       "I'm actually his brother... he literally forced me to write this 5-star review at gunpoint.",
     name: "Kushal Thakur",
@@ -51,7 +51,7 @@ export const defaultTestimonials: Testimonial[] = [
   {
     id: "3",
     quote:
-      "I couldn't be happier with the results. I hired Nikhil on Upwork to build our organization's flagship website (usalef.org) for the American Lebanon Education Foundation (ALEF). From the very first call, he demonstrated exceptional professionalism and deep expertise in modern web development. He took our vision for a clean, impactful advocacy platform and delivered a truly outstanding, fully responsive website that exceeds every expectation. The design is sleek, professional, and perfectly on-brand, modern typography, intuitive navigation, and flawless mobile responsiveness across every device. He expertly implemented multilingual support (English, French, Arabic, and Spanish) so our global audience can engage seamlessly. Standout features include the elegant countdown timer for our Inauguration Celebration event on April 14, integrated video player and media section with podcasts and shorts, smooth donation and membership flows, plus comprehensive Research & News sections (House of Corruption financial audit, Congressional Advocacy tracking key legislation, Blogs & Articles, etc.). Throughout the project Nikhil was incredibly responsive and communicative, providing regular updates and incorporating every round of feedback with zero delays. He stayed well within budget and timeline while suggesting smart improvements that elevated the final product even further. The end result is a high-converting, professional website that has already noticeably increased donor engagement and visibility for our non-profit mission of advocating for a free and sovereign Lebanon. If you're looking for a talented, reliable professional website developer who delivers pixel-perfect, modern, responsive websites with multilingual capabilities and excellent UX.",
+      "I couldn't be happier with the results. I hired Zaheer on Upwork to build our organization's flagship website (usalef.org) for the American Lebanon Education Foundation (ALEF). From the very first call, he demonstrated exceptional professionalism and deep expertise in modern web development. He took our vision for a clean, impactful advocacy platform and delivered a truly outstanding, fully responsive website that exceeds every expectation. The design is sleek, professional, and perfectly on-brand, modern typography, intuitive navigation, and flawless mobile responsiveness across every device. He expertly implemented multilingual support (English, French, Arabic, and Spanish) so our global audience can engage seamlessly. Standout features include the elegant countdown timer for our Inauguration Celebration event on April 14, integrated video player and media section with podcasts and shorts, smooth donation and membership flows, plus comprehensive Research & News sections (House of Corruption financial audit, Congressional Advocacy tracking key legislation, Blogs & Articles, etc.). Throughout the project Zaheer was incredibly responsive and communicative, providing regular updates and incorporating every round of feedback with zero delays. He stayed well within budget and timeline while suggesting smart improvements that elevated the final product even further. The end result is a high-converting, professional website that has already noticeably increased donor engagement and visibility for our non-profit mission of advocating for a free and sovereign Lebanon. If you're looking for a talented, reliable professional website developer who delivers pixel-perfect, modern, responsive websites with multilingual capabilities and excellent UX.",
     shortQuote:
       "I couldn't be happier with the results. He took our vision for a clean, impactful advocacy platform and delivered a truly outstanding, fully responsive website that exceeds every expectation.",
     backgroundQuote:
