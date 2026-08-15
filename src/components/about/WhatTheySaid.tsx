@@ -349,15 +349,21 @@ export default function WhatTheySaid({
                 }`}
               >
                 <div
-                  className={`relative w-16 h-16 sm:w-20 sm:h-20 md:w-28 md:h-28 rounded-full overflow-hidden transition-all duration-300 ${
-                    isActive ? "" : "hover:opacity-80"
+                  className={`relative w-16 h-16 sm:w-20 sm:h-20 md:w-28 md:h-28 rounded-full overflow-hidden transition-all duration-500 border ${
+                    isActive
+                      ? "border-orange/60 shadow-[0_0_25px_rgba(255,77,0,0.25)]"
+                      : "border-white/10 hover:opacity-80"
                   }`}
                 >
                   <Image
                     src={item.avatar}
                     alt={item.name}
                     fill
-                    className="object-cover grayscale contrast-130 brightness-70"
+                    className={`object-cover transition-all duration-500 ${
+                      isActive
+                        ? "grayscale-0 contrast-100 brightness-100"
+                        : "grayscale contrast-125 brightness-60 group-hover:brightness-85"
+                    }`}
                     sizes="(max-width: 768px) 80px, 112px"
                   />
                 </div>
@@ -422,12 +428,12 @@ export default function WhatTheySaid({
 
               {/* Client Info Header */}
               <div className="flex items-center gap-4 pr-10">
-                <div className="relative w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden shrink-0 border border-white/15">
+                <div className="relative w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden shrink-0 border border-orange/40 shadow-lg">
                   <Image
                     src={modalItem.avatar}
                     alt={modalItem.name}
                     fill
-                    className="object-cover grayscale contrast-130 brightness-70"
+                    className="object-cover grayscale-0 contrast-100 brightness-100"
                   />
                 </div>
                 <div className="flex flex-col gap-0.5">
