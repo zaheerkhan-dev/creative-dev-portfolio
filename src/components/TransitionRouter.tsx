@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useRef, useState, useEffect } from "react";
+import React, { createContext, useContext, useRef, useState, useEffect, useCallback } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import gsap from "gsap";
 
@@ -28,32 +28,36 @@ export default function TransitionRouter({ children }: { children: React.ReactNo
   const [isTransitioning, setIsTransitioning] = useState(false);
   const isEnteringRef = useRef(false);
 
-  const PATH_LENGTH = 550;
+  const getPathLen = useCallback(() => {
+    if (pathRef.current && typeof pathRef.current.getTotalLength === "function") {
+      try {
+        return pathRef.current.getTotalLength();
+      } catch {
+        return 530;
+      }
+    }
+    return 530;
+  }, []);
 
   // Initialize path stroke dash
   useEffect(() => {
     if (pathRef.current) {
-      const len = pathRef.current.getTotalLength ? pathRef.current.getTotalLength() : 550;
+      const len = getPathLen();
       pathRef.current.style.strokeDasharray = `${len} ${len}`;
       pathRef.current.style.strokeDashoffset = `${len}`;
     }
-  }, []);
+  }, [getPathLen]);
 
-  // Enter animation when pathname changes after navigation
-  useEffect(() => {
-    if (currentPathRef.current !== pathname) {
-      currentPathRef.current = pathname;
-      runEnterAnimation();
-    }
-  }, [pathname]);
-
-  const runEnterAnimation = () => {
+  const runEnterAnimation = useCallback(() => {
     const modal = modalRef.current;
     const svg = svgRef.current;
     const path = pathRef.current;
     const blocks = containerRef.current?.querySelectorAll(".transition-slice");
 
     if (modal && svg && path && blocks && blocks.length > 0) {
+      const len = getPathLen();
+      gsap.killTweensOf([blocks, modal, svg, path]);
+
       const tl = gsap.timeline({
         onComplete: () => {
           document.body.style.pointerEvents = "auto";
@@ -62,28 +66,41 @@ export default function TransitionRouter({ children }: { children: React.ReactNo
         },
       });
 
+      // 1. Draw "Z" path out
       tl.to(path, {
-        strokeDashoffset: -PATH_LENGTH,
-        duration: 0.8,
-        ease: "power2.inOut",
+        strokeDashoffset: -len,
+        duration: 0.45,
+        ease: "power2.in",
       })
-        .to(svg, { opacity: 0, duration: 0.3 }, ">-0.2")
-        .to(modal, { opacity: 0, duration: 0.25, ease: "power2.out" })
+        .to(svg, { opacity: 0, duration: 0.15 }, "-=0.1")
+        .to(modal, { opacity: 0, duration: 0.15 }, "<")
+        // 2. Open 25-slice curtain smoothly from right to left
         .add(() => {
           gsap.set(blocks, { scaleX: 1.01, transformOrigin: "right" });
         })
         .to(blocks, {
           scaleX: 0,
           duration: 0.4,
-          stagger: 0.02,
-          ease: "power2.out",
+          stagger: 0.015,
+          ease: "power3.inOut",
           transformOrigin: "right",
         });
     } else {
       document.body.style.pointerEvents = "auto";
       setIsTransitioning(false);
     }
-  };
+  }, [getPathLen]);
+
+  // Enter animation when pathname changes after navigation
+  useEffect(() => {
+    if (currentPathRef.current !== pathname) {
+      currentPathRef.current = pathname;
+      // Brief RAF delay to allow Next.js tree hydration before curtain opens
+      requestAnimationFrame(() => {
+        runEnterAnimation();
+      });
+    }
+  }, [pathname, runEnterAnimation]);
 
   const navigate = (href: string) => {
     if (href === pathname || isTransitioning) return;
@@ -97,9 +114,10 @@ export default function TransitionRouter({ children }: { children: React.ReactNo
     const blocks = containerRef.current?.querySelectorAll(".transition-slice");
 
     if (modal && svg && path && blocks && blocks.length > 0) {
+      const len = getPathLen();
       gsap.killTweensOf([blocks, modal, svg, path]);
 
-      gsap.set(path, { strokeDashoffset: PATH_LENGTH });
+      gsap.set(path, { strokeDasharray: `${len} ${len}`, strokeDashoffset: len });
       gsap.set(svg, { opacity: 0 });
       gsap.set(modal, { opacity: 0 });
       gsap.set(blocks, { scaleX: 0, transformOrigin: "left" });
@@ -113,19 +131,21 @@ export default function TransitionRouter({ children }: { children: React.ReactNo
         },
       });
 
+      // 1. Close curtain across the screen
       tl.to(blocks, {
         scaleX: 1.01,
-        duration: 0.5,
-        stagger: 0.02,
-        ease: "power2.out",
+        duration: 0.4,
+        stagger: 0.015,
+        ease: "power3.inOut",
         transformOrigin: "left",
       })
-        .to(modal, { opacity: 1, duration: 0.1 }, "-=0.1")
-        .to(svg, { opacity: 1, duration: 0.1 })
+        // 2. Fade in modal & draw "Z" in
+        .to(modal, { opacity: 1, duration: 0.1 }, "-=0.15")
+        .to(svg, { opacity: 1, duration: 0.1 }, "<")
         .to(
           path,
-          { strokeDashoffset: 0, duration: 0.8, ease: "power2.inOut" },
-          "-=.2"
+          { strokeDashoffset: 0, duration: 0.5, ease: "power2.out" },
+          "-=0.05"
         );
     } else {
       router.push(href);
