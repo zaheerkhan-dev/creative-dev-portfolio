@@ -28,13 +28,14 @@ export default function TransitionRouter({ children }: { children: React.ReactNo
   const [isTransitioning, setIsTransitioning] = useState(false);
   const isEnteringRef = useRef(false);
 
-  const PATH_LENGTH = 350;
+  const PATH_LENGTH = 550;
 
   // Initialize path stroke dash
   useEffect(() => {
     if (pathRef.current) {
-      pathRef.current.style.strokeDasharray = `${PATH_LENGTH} ${PATH_LENGTH}`;
-      pathRef.current.style.strokeDashoffset = `${PATH_LENGTH}`;
+      const len = pathRef.current.getTotalLength ? pathRef.current.getTotalLength() : 550;
+      pathRef.current.style.strokeDasharray = `${len} ${len}`;
+      pathRef.current.style.strokeDashoffset = `${len}`;
     }
   }, []);
 
@@ -157,9 +158,10 @@ export default function TransitionRouter({ children }: { children: React.ReactNo
             >
               <path
                 ref={pathRef}
-                d="M 201.474 284.661 C 171.385 136.247 338.16 136.944 308.88 284.661"
-                className="fill-none stroke-background stroke-50"
+                d="M 175 165 L 325 165 L 175 335 L 325 335"
+                className="fill-none stroke-background stroke-[50]"
                 strokeLinecap="round"
+                strokeLinejoin="round"
               />
             </svg>
           </div>
