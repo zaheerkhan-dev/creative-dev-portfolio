@@ -51,15 +51,15 @@ export const defaultTestimonials: Testimonial[] = [
   {
     id: "3",
     quote:
-      "Zaheer is one of the most passionate and detail-oriented developers you will ever meet. His ability to turn complex creative ideas into fast, pixel-perfect digital experiences is truly inspiring.",
+      "As a website strategist, I have high standards for frontend execution. Whenever I need custom code, complex motion, or high-performance Next.js architecture that goes beyond standard setups, Zaheer is the developer I trust. His technical depth and speed are unreal.",
     shortQuote:
-      "Zaheer is one of the most passionate and detail-oriented developers you will ever meet. His craft and speed are unmatched.",
+      "Whenever I need custom code, complex motion, or high-performance Next.js architecture that goes beyond standard setups, Zaheer is the developer I trust.",
     backgroundQuote:
       "I am literally his friend and had zero idea that he put my face on his portfolio.",
     name: "Abeeha Parveen",
-    role: "Collaborator",
-    company: "Studio",
-    websiteUrl: "https://github.com/zaheerkhan-dev",
+    role: "Website Strategist & Developer",
+    company: "LinkedIn",
+    websiteUrl: "https://www.linkedin.com/in/abeeha-parveen-website-strategist/",
     avatar: "/Images/About/Abeeha_Parveen_Client_Img.png",
   },
 ];
