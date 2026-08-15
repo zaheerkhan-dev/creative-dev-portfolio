@@ -66,23 +66,24 @@ export default function TransitionRouter({ children }: { children: React.ReactNo
         },
       });
 
-      // 1. Draw "Z" path out
+      // 1. Symmetrically Draw "Z" path out (0.7s duration matching Draw In)
       tl.to(path, {
         strokeDashoffset: -len,
-        duration: 0.45,
-        ease: "power2.in",
+        duration: 0.7,
+        ease: "power2.inOut",
       })
-        .to(svg, { opacity: 0, duration: 0.15 }, "-=0.1")
-        .to(modal, { opacity: 0, duration: 0.15 }, "<")
-        // 2. Open 25-slice curtain smoothly from right to left
+        // 2. Smoothly fade modal after stroke reaches completion
+        .to(svg, { opacity: 0, duration: 0.2 }, "-=0.1")
+        .to(modal, { opacity: 0, duration: 0.2 }, "<")
+        // 3. Open 25-slice curtain smoothly from right to left
         .add(() => {
           gsap.set(blocks, { scaleX: 1.01, transformOrigin: "right" });
         })
         .to(blocks, {
           scaleX: 0,
-          duration: 0.4,
+          duration: 0.45,
           stagger: 0.015,
-          ease: "power3.inOut",
+          ease: "power2.inOut",
           transformOrigin: "right",
         });
     } else {
@@ -95,7 +96,6 @@ export default function TransitionRouter({ children }: { children: React.ReactNo
   useEffect(() => {
     if (currentPathRef.current !== pathname) {
       currentPathRef.current = pathname;
-      // Brief RAF delay to allow Next.js tree hydration before curtain opens
       requestAnimationFrame(() => {
         runEnterAnimation();
       });
@@ -134,18 +134,18 @@ export default function TransitionRouter({ children }: { children: React.ReactNo
       // 1. Close curtain across the screen
       tl.to(blocks, {
         scaleX: 1.01,
-        duration: 0.4,
+        duration: 0.45,
         stagger: 0.015,
-        ease: "power3.inOut",
+        ease: "power2.inOut",
         transformOrigin: "left",
       })
-        // 2. Fade in modal & draw "Z" in
-        .to(modal, { opacity: 1, duration: 0.1 }, "-=0.15")
-        .to(svg, { opacity: 1, duration: 0.1 }, "<")
+        // 2. Fade in modal & draw "Z" in with smooth symmetrical timing (0.7s)
+        .to(modal, { opacity: 1, duration: 0.15 }, "-=0.2")
+        .to(svg, { opacity: 1, duration: 0.15 }, "<")
         .to(
           path,
-          { strokeDashoffset: 0, duration: 0.5, ease: "power2.out" },
-          "-=0.05"
+          { strokeDashoffset: 0, duration: 0.7, ease: "power2.inOut" },
+          "-=0.1"
         );
     } else {
       router.push(href);
