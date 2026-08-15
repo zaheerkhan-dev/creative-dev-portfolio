@@ -54,7 +54,7 @@ export default function ParticleCanvas({
   const colorBufferRef = useRef<WebGLBuffer | null>(null);
   const posArrayRef = useRef<Float32Array | null>(null);
   const rafRef = useRef<number | null>(null);
-  const framesRemainingRef = useRef<number>(180);
+  const framesRemainingRef = useRef<number>(300);
   const mousePosRef = useRef<{ x: number; y: number }>({ x: -9999, y: -9999 });
   const lastTimeRef = useRef<number>(0);
   const vaoRef = useRef<any>(null);
@@ -76,12 +76,17 @@ export default function ParticleCanvas({
     const canvas = canvasRef.current;
     if (canvas) {
       canvas.style.display = isHomePage ? "block" : "none";
+      if (isHomePage) {
+        framesRemainingRef.current = 300;
+      }
     }
   }, [isHomePage]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
+
+    let isCancelled = false;
 
     const config = {
       logoPath: img,
@@ -216,6 +221,7 @@ export default function ParticleCanvas({
     };
 
     const animateLoop = (timestamp: number) => {
+      if (isCancelled) return;
       if (lastTimeRef.current === 0) lastTimeRef.current = timestamp;
       const deltaTime = (timestamp - lastTimeRef.current) / 1000;
       lastTimeRef.current = timestamp;
@@ -306,9 +312,8 @@ export default function ParticleCanvas({
       }
       programRef.current = program;
 
-      // Load and sample particle image
-      const image = new Image();
-      image.onload = () => {
+      const processImage = (imgElement: HTMLImageElement) => {
+        if (isCancelled) return;
         const offCanvas = document.createElement("canvas");
         const offCtx = offCanvas.getContext("2d");
         if (!offCtx) return;
@@ -317,7 +322,7 @@ export default function ParticleCanvas({
         offCanvas.height = config.logoSize;
         const drawSize = config.logoSize * 0.9;
         const drawOffset = (config.logoSize - drawSize) / 2;
-        offCtx.drawImage(image, drawOffset, drawOffset, drawSize, drawSize);
+        offCtx.drawImage(imgElement, drawOffset, drawOffset, drawSize, drawSize);
 
         const imgData = offCtx.getImageData(0, 0, config.logoSize, config.logoSize).data;
         const centerX = canvas.width / 2;
@@ -387,11 +392,24 @@ export default function ParticleCanvas({
           vaoRef.current = vao;
         }
 
+        framesRemainingRef.current = 300;
         render();
-        animateLoop(0);
       };
 
+      // Load image and handle both fresh load and cached image
+      const image = new Image();
+      image.crossOrigin = "anonymous";
+      image.onload = () => processImage(image);
       image.src = config.logoPath;
+
+      if (image.complete && image.naturalWidth > 0) {
+        processImage(image);
+      }
+
+      // Start animation loop
+      lastTimeRef.current = 0;
+      framesRemainingRef.current = 300;
+      rafRef.current = requestAnimationFrame(animateLoop);
 
       if (isMobile) {
         document.addEventListener("touchstart", handlePointerMove, { passive: false });
@@ -405,6 +423,7 @@ export default function ParticleCanvas({
       window.addEventListener("resize", handleWindowResize);
 
       return () => {
+        isCancelled = true;
         if (isMobile) {
           document.removeEventListener("touchstart", handlePointerMove);
           document.removeEventListener("touchmove", handlePointerMove);
