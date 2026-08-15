@@ -1,0 +1,154 @@
+"use client";
+
+import React, { useRef } from "react";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
+import { SplitText } from "@/lib/splitText";
+
+interface SocialLinkItem {
+  name: string;
+  url: string;
+  d: string;
+  isCustomOffset?: boolean;
+}
+
+const socialLinks: SocialLinkItem[] = [
+  {
+    name: "Upwork",
+    url: "https://www.upwork.com/freelancers/~01290115e797943d08?mp_source=share",
+    d: "M18.561 13.158c-1.102 0-2.135-.467-3.074-1.227l.228-1.076.008-.042c.207-1.143.849-3.06 2.839-3.06 1.492 0 2.703 1.212 2.703 2.703-.001 1.489-1.212 2.702-2.704 2.702zm0-8.14c-2.539 0-4.51 1.649-5.31 4.366-1.22-1.834-2.148-4.036-2.687-5.892H7.828v7.112c-.002 1.406-1.141 2.546-2.547 2.548-1.405-.002-2.543-1.143-2.545-2.548V3.492H0v7.112c0 2.914 2.37 5.303 5.281 5.303 2.913 0 5.283-2.389 5.283-5.303v-1.19c.529 1.107 1.182 2.229 1.974 3.221l-1.673 7.873h2.797l1.213-5.71c1.063.679 2.285 1.109 3.686 1.109 3 0 5.439-2.452 5.439-5.45 0-3-2.439-5.439-5.439-5.439z",
+  },
+  {
+    name: "Linkedin",
+    url: "https://www.linkedin.com/in/nikhil-dhakad",
+    d: "M24,4H6C4.895,4,4,4.895,4,6v18c0,1.105,0.895,2,2,2h18c1.105,0,2-0.895,2-2V6C26,4.895,25.105,4,24,4z M10.954,22h-2.95v-9.492h2.95V22z M9.449,11.151c-0.951,0-1.72-0.771-1.72-1.72c0-0.949,0.77-1.719,1.72-1.719c0.948,0,1.719,0.771,1.719,1.719C11.168,10.38,10.397,11.151,9.449,11.151z M22.004,22h-2.948v-4.616c0-1.101-0.02-2.517-1.533-2.517c-1.535,0-1.771,1.199-1.771,2.437V22h-2.948v-9.492h2.83v1.297h0.04c0.394-0.746,1.356-1.533,2.791-1.533c2.987,0,3.539,1.966,3.539,4.522V22z",
+    isCustomOffset: true,
+  },
+  {
+    name: "GitHub",
+    url: "https://github.com/Tech-Nickkk",
+    d: "M18.906.614a3.4 3.4 0 0 0-.896.127c-.955.262-1.824.76-2.646 1.302a13.7 13.7 0 0 0-6.807-.002A11 11 0 0 0 6.71 1.016C6.136.78 5.526.585 4.899.622c-.113.01-.263.013-.315.135a5.8 5.8 0 0 0-.422 1.737 4.8 4.8 0 0 0 .223 1.923 5.4 5.4 0 0 0-1.36 3.053c-.05.453-.036.91-.015 1.365-.934-.237-1.93-.278-2.867-.035-.11.025-.174.16-.128.261.036.092.146.14.238.111.912-.232 1.881-.177 2.783.074q.045.412.107.821c-.798-.196-1.635-.093-2.42.11-.14.033-.18.238-.071.328.083.08.205.04.303.015.74-.18 1.536-.258 2.275-.027.072.248.13.5.226.741l.316.715c.321.63.806 1.167 1.365 1.596a6.8 6.8 0 0 0 1.73.942c.727.277 1.49.449 2.258.571a3.3 3.3 0 0 0-.376.498 3.2 3.2 0 0 0-.335.795c-.43.007-.865.05-1.288-.045a1.95 1.95 0 0 1-.864-.452 3.6 3.6 0 0 1-.62-.739 1 1 0 0 0-.618-.43.73.73 0 0 0-.57.11.67.67 0 0 0-.256.406c-.051.221-.011.452.059.665.122.365.351.687.626.954.485.467 1.089.799 1.726 1.006.535.17 1.112.257 1.667.143-.003.99.003 1.979-.003 2.968-.024.232-.134.45-.28.628-.1.128-.23.231-.377.301-.128.056-.268.102-.362.212a.43.43 0 0 0-.097.422.41.41 0 0 0 .265.25c.148.05.306.039.46.036.45-.013.907-.1 1.306-.318.55-.294.95-.897.925-1.532-.002-.679-.022-1.357-.032-2.036-.003-.385-.018-.771.016-1.155.028 1.009.034 2.019.054 3.028.002.324-.001.654-.09.97a1.8 1.8 0 0 1-.365.682c-.098.12-.226.22-.295.362-.06.114-.07.26.001.37.084.143.254.197.409.22.33.041.657-.073.95-.218a2.16 2.16 0 0 0 .86-.783c.209-.338.308-.736.316-1.13.01-.584.008-1.167.017-1.75.035-.297.021-.596.028-.894.005.175.003.35.004.525-.027.534-.003 1.07-.004 1.604.01.31-.013.624.049.93.062.324.195.636.398.897.234.3.551.53.902.678.294.123.63.204.943.105.156-.044.296-.18.3-.35.003-.169-.105-.312-.22-.427a1.87 1.87 0 0 1-.524-1.36V18.47c.004-.27-.012-.54.014-.809.049.405.034.814.033 1.22.004.733-.003 1.466.004 2.2.015.41.18.822.48 1.108.346.337.824.5 1.295.565q.36.05.719.026c.182-.016.37-.137.408-.324.039-.176-.059-.355-.2-.457-.093-.075-.215-.095-.318-.153-.292-.16-.5-.451-.588-.77-.045-.138-.022-.284-.028-.426.001-.89-.007-1.782.008-2.672.483.097.983.043 1.455-.084a4.6 4.6 0 0 0 1.794-.94c.334-.29.618-.651.761-1.073.068-.205.11-.426.068-.641a.7.7 0 0 0-.233-.414.72.72 0 0 0-.583-.137 1 1 0 0 0-.632.431c-.206.314-.445.612-.744.841a1.9 1.9 0 0 1-.718.346c-.43.103-.876.059-1.314.051a3.9 3.9 0 0 0-.72-1.269c-.032-.022.018-.042.036-.041 1.228-.18 2.453-.528 3.514-1.188a5.15 5.15 0 0 0 1.638-1.593 3 3 0 0 0 .21-.383c.096-.214.203-.423.285-.644a8 8 0 0 0 .218-.725c.661-.228 1.38-.193 2.057-.057q.187.037.375.084c.07.017.154.017.21-.036.104-.084.073-.278-.054-.323-.81-.218-1.677-.314-2.5-.104a9 9 0 0 0 .109-.792c0-.031.038-.032.06-.041.903-.252 1.874-.306 2.788-.073.12.038.227-.057.263-.165v-.037c-.031-.073-.074-.156-.16-.173-.956-.246-1.971-.197-2.92.052.038-.68.033-1.37-.125-2.037a5.5 5.5 0 0 0-1.251-2.399c.386-1.133.283-2.39-.134-3.499-.04-.105-.07-.249-.204-.27q-.15-.03-.3-.032",
+  },
+  {
+    name: "CodePen",
+    url: "https://codepen.io/nikhildhakad",
+    d: "M18.144 13.067v-2.134L16.55 12zm1.276 1.194a.628.628 0 01-.006.083l-.005.028-.011.053-.01.031c-.005.016-.01.031-.017.047l-.014.03a.78.78 0 01-.021.043l-.019.03a.57.57 0 01-.08.1l-.026.025a.602.602 0 01-.036.03l-.029.022-.01.008-6.782 4.522a.637.637 0 01-.708 0L4.864 14.79l-.01-.008a.599.599 0 01-.065-.052l-.026-.025-.032-.034-.021-.028a.588.588 0 01-.067-.11l-.014-.031a.644.644 0 01-.017-.047l-.01-.03c-.004-.018-.008-.036-.01-.054l-.006-.028a.628.628 0 01-.006-.083V9.739c0-.028.002-.055.006-.083l.005-.027.011-.054.01-.03a.574.574 0 01.12-.217l.031-.034.026-.025a.62.62 0 01.065-.052l.01-.008 6.782-4.521a.638.638 0 01.708 0l6.782 4.521.01.008.03.022.035.03c.01.008.017.016.026.025a.545.545 0 01.08.1l.019.03a.633.633 0 01.021.043l.014.03c.007.016.012.032.017.047l.01.031c.004.018.008.036.01.054l.006.027a.619.619 0 01.006.083zM12 0C5.373 0 0 5.372 0 12 0 18.627 5.373 24 12 24c6.628 0 12-5.372 12-12 0-6.627-5.372-12-12-12m0 10.492L9.745 12 12 13.51 14.255 12zm.638 4.124v2.975l4.996-3.33-2.232-1.493zm-6.272-.356l4.996 3.33v-2.974l-2.764-1.849zm11.268-4.52l-4.996-3.33v2.974l2.764 1.85zm-6.272-.356V6.41L6.366 9.74l2.232 1.493zm-5.506 1.549v2.134L7.45 12Z",
+  },
+];
+
+export default function SocialLinks() {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useGSAP(
+    () => {
+      const links = gsap.utils.toArray<HTMLElement>(".home-social-link", containerRef.current);
+
+      links.forEach((link) => {
+        const nameEl = link.querySelector<HTMLElement>(".social-link-name");
+        if (!nameEl) return;
+
+        const split = new SplitText(nameEl, { type: "chars" });
+        gsap.set(split.chars, { yPercent: 100 });
+
+        let isActive = false;
+        let isTouching = false;
+        let touchTimeout: NodeJS.Timeout | null = null;
+
+        const handleEnter = () => {
+          if (isActive) return;
+          isActive = true;
+          link.setAttribute("data-active", "true");
+          gsap.to(split.chars, {
+            yPercent: 0,
+            ease: "power4.out",
+            duration: 0.75,
+            stagger: { each: 0.01, from: "center" },
+            overwrite: "auto",
+          });
+        };
+
+        const handleLeave = () => {
+          if (!isActive) return;
+          isActive = false;
+          link.removeAttribute("data-active");
+          gsap.to(split.chars, {
+            yPercent: 100,
+            ease: "power4.out",
+            duration: 0.75,
+            stagger: { each: 0.01, from: "center" },
+            overwrite: "auto",
+          });
+        };
+
+        const onMouseEnter = () => {
+          if (!isTouching) handleEnter();
+        };
+
+        const onMouseLeave = () => {
+          if (!isTouching) handleLeave();
+        };
+
+        const onTouchStart = () => {
+          isTouching = true;
+          if (touchTimeout) clearTimeout(touchTimeout);
+          handleEnter();
+        };
+
+        const onTouchEnd = () => {
+          handleLeave();
+          if (touchTimeout) clearTimeout(touchTimeout);
+          touchTimeout = setTimeout(() => {
+            isTouching = false;
+          }, 500);
+        };
+
+        link.addEventListener("mouseenter", onMouseEnter);
+        link.addEventListener("mouseleave", onMouseLeave);
+        link.addEventListener("touchstart", onTouchStart, { passive: true });
+        link.addEventListener("touchend", onTouchEnd, { passive: true });
+        link.addEventListener("touchcancel", onTouchEnd, { passive: true });
+      });
+    },
+    { scope: containerRef }
+  );
+
+  return (
+    <div
+      ref={containerRef}
+      className="absolute left-1/2 -translate-x-1/2 bottom-8 md:bottom-12 md:left-12 md:translate-x-0 z-50 flex flex-row md:flex-col gap-4 md:gap-3.5 items-center pointer-events-auto"
+    >
+      {socialLinks.map((item) => (
+        <a
+          key={item.name}
+          href={item.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="group home-social-link relative flex items-center select-none [-webkit-touch-callout:none]"
+          aria-label={item.name}
+        >
+          {/* Circle Icon Button */}
+          <div className="w-10 h-10 md:w-11 md:h-11 z-20 overflow-hidden relative bg-[#2a2929] rounded-full p-2.5 md:p-3 group-hover:scale-90 group-data-[active=true]:scale-90 transition-transform duration-300 flex items-center justify-center">
+            <svg
+              viewBox="0 0 24 24"
+              className={`w-full h-full ${item.isCustomOffset ? "-translate-x-[1px]" : ""}`}
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                className="fill-foreground group-hover:fill-[#131212] transition-all duration-400 ease-in-out"
+                d={item.d}
+              />
+            </svg>
+
+            {/* Rising Orange Background Layer */}
+            <div className="w-full h-full -z-10 absolute top-0 left-0 rounded-full translate-y-full bg-orange group-hover:translate-y-0 group-data-[active=true]:translate-y-0 transition-transform duration-300 ease-in-out" />
+          </div>
+
+          {/* Staggered Letter Tooltip */}
+          <div className="social-link-name absolute overflow-hidden -top-7 left-1/2 -translate-x-1/2 md:top-1/2 md:left-full md:ml-3 md:-translate-y-1/2 md:translate-x-0 whitespace-nowrap uppercase font-bold tracking-wide text-foreground text-xs md:text-sm pointer-events-none">
+            {item.name}
+          </div>
+        </a>
+      ))}
+    </div>
+  );
+}
