@@ -349,10 +349,8 @@ export default function WhatTheySaid({
                 }`}
               >
                 <div
-                  className={`relative w-16 h-16 sm:w-20 sm:h-20 md:w-28 md:h-28 rounded-full overflow-hidden transition-all duration-500 border ${
-                    isActive
-                      ? "border-orange/60 shadow-[0_0_25px_rgba(255,77,0,0.25)]"
-                      : "border-white/10 hover:opacity-80"
+                  className={`relative w-16 h-16 sm:w-20 sm:h-20 md:w-28 md:h-28 rounded-full overflow-hidden transition-all duration-500 ${
+                    isActive ? "" : "hover:opacity-80"
                   }`}
                 >
                   <Image
@@ -428,7 +426,7 @@ export default function WhatTheySaid({
 
               {/* Client Info Header */}
               <div className="flex items-center gap-4 pr-10">
-                <div className="relative w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden shrink-0 border border-orange/40 shadow-lg">
+                <div className="relative w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden shrink-0 border border-white/15">
                   <Image
                     src={modalItem.avatar}
                     alt={modalItem.name}
