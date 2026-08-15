@@ -51,16 +51,16 @@ export const defaultTestimonials: Testimonial[] = [
   {
     id: "3",
     quote:
-      "I couldn't be happier with the results. I hired Zaheer on Upwork to build our organization's flagship website (usalef.org) for the American Lebanon Education Foundation (ALEF). From the very first call, he demonstrated exceptional professionalism and deep expertise in modern web development. He took our vision for a clean, impactful advocacy platform and delivered a truly outstanding, fully responsive website that exceeds every expectation. The design is sleek, professional, and perfectly on-brand, modern typography, intuitive navigation, and flawless mobile responsiveness across every device. He expertly implemented multilingual support (English, French, Arabic, and Spanish) so our global audience can engage seamlessly. Standout features include the elegant countdown timer for our Inauguration Celebration event on April 14, integrated video player and media section with podcasts and shorts, smooth donation and membership flows, plus comprehensive Research & News sections (House of Corruption financial audit, Congressional Advocacy tracking key legislation, Blogs & Articles, etc.). Throughout the project Zaheer was incredibly responsive and communicative, providing regular updates and incorporating every round of feedback with zero delays. He stayed well within budget and timeline while suggesting smart improvements that elevated the final product even further. The end result is a high-converting, professional website that has already noticeably increased donor engagement and visibility for our non-profit mission of advocating for a free and sovereign Lebanon. If you're looking for a talented, reliable professional website developer who delivers pixel-perfect, modern, responsive websites with multilingual capabilities and excellent UX.",
+      "Zaheer is one of the most passionate and detail-oriented developers you will ever meet. His ability to turn complex creative ideas into fast, pixel-perfect digital experiences is truly inspiring.",
     shortQuote:
-      "I couldn't be happier with the results. He took our vision for a clean, impactful advocacy platform and delivered a truly outstanding, fully responsive website that exceeds every expectation.",
+      "Zaheer is one of the most passionate and detail-oriented developers you will ever meet. His craft and speed are unmatched.",
     backgroundQuote:
-      "He wrote this entire paragraph himself and just asked me to copy-paste it into Upwork.",
-    name: "Ziad",
-    role: "Client",
-    company: "ALEF",
-    websiteUrl: "https://www.usalef.org/",
-    avatar: "/Images/About/Ziad_Client_Img.jpg",
+      "I am literally his friend and had zero idea that he put my face on his portfolio.",
+    name: "Abeeha Parveen",
+    role: "Collaborator",
+    company: "Studio",
+    websiteUrl: "https://github.com/zaheerkhan-dev",
+    avatar: "/Images/About/Abeeha_Parveen_Client_Img.png",
   },
 ];
 

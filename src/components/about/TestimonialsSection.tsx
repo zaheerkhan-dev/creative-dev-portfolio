@@ -44,14 +44,14 @@ export const testimonialsData: TestimonialItem[] = [
   {
     id: "3",
     quote:
-      "I couldn't be happier with the results. I hired Zaheer on Upwork to build our organization's flagship website. From the very first call, he demonstrated exceptional professionalism and deep expertise in modern web development. The design is sleek, professional, and perfectly on-brand with flawless responsiveness across every device.",
+      "Zaheer is one of the most passionate and detail-oriented developers you will ever meet. His ability to turn complex creative ideas into fast, pixel-perfect digital experiences is truly inspiring.",
     backgroundQuote:
-      "He wrote this entire paragraph himself and just asked me to copy-paste it into Upwork.",
-    name: "Ziad",
-    role: "Client",
-    company: "ALEF",
-    websiteUrl: "https://www.usalef.org/",
-    avatar: "/Images/About/Ziad_Client_Img.jpg",
+      "I am literally his friend and had zero idea that he put my face on his portfolio.",
+    name: "Abeeha Parveen",
+    role: "Collaborator",
+    company: "Studio",
+    websiteUrl: "https://github.com/zaheerkhan-dev",
+    avatar: "/Images/About/Abeeha_Parveen_Client_Img.png",
   },
 ];
 
