@@ -24,18 +24,34 @@ function BookMesh({
   const mouseOffset = useRef({ x: 0, y: 0 });
   const targetMouseOffset = useRef({ x: 0, y: 0 });
 
-  // Calibrate material properties to prevent emissive blowout and render rich dark paper with crisp glowing runes
+  // Recreate Sketchfab's exact dark-parchment shader with brilliant glowing cyan runes
   useEffect(() => {
     clonedScene.traverse((obj) => {
       if ("isMesh" in obj && (obj as THREE.Mesh).isMesh) {
         const mesh = obj as THREE.Mesh;
         const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
         materials.forEach((mat) => {
-          if (mat) {
-            mat.side = THREE.DoubleSide;
-            if ("emissiveIntensity" in mat) {
-              (mat as THREE.MeshStandardMaterial).emissiveIntensity = 0.4;
-            }
+          if (!mat) return;
+          mat.side = THREE.DoubleSide;
+
+          // Pages & Rune Particles Mesh (lambert5SG)
+          if (mat.name === "lambert5SG" || mesh.name === "Object_3" || (mat as any).alphaMode === "BLEND") {
+            const stdMat = mat as THREE.MeshStandardMaterial;
+            stdMat.transparent = true;
+            stdMat.depthWrite = true;
+            stdMat.alphaTest = 0.02;
+            
+            // Set dark midnight navy parchment base so ambient light doesn't turn paper white
+            stdMat.color = new THREE.Color("#030c18");
+            stdMat.emissive = new THREE.Color("#00E5FF");
+            stdMat.emissiveIntensity = 1.8;
+            stdMat.roughness = 0.3;
+            stdMat.metalness = 0.1;
+          } else {
+            // Book cover & metal clasp (MeshSG)
+            const stdMat = mat as THREE.MeshStandardMaterial;
+            stdMat.roughness = 0.6;
+            stdMat.metalness = 0.4;
           }
         });
       }
@@ -159,13 +175,13 @@ export default function EducationBookModel({
           alpha: true,
           antialias: true,
           toneMapping: THREE.ACESFilmicToneMapping,
-          toneMappingExposure: 0.85,
+          toneMappingExposure: 1.0,
         }}
         className="w-full h-full"
       >
-        <ambientLight intensity={0.5} />
-        <directionalLight position={[6, 10, 6]} intensity={0.9} />
-        <directionalLight position={[-6, 3, -4]} intensity={0.4} color="#00E5FF" />
+        <ambientLight intensity={0.7} />
+        <directionalLight position={[6, 10, 8]} intensity={1.2} />
+        <directionalLight position={[-6, 2, -4]} intensity={0.5} color="#00E5FF" />
         <Suspense fallback={<FallbackBox position={position} />}>
           <BookMesh
             containerRef={containerRef}
