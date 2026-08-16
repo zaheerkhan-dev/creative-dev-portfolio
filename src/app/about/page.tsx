@@ -88,13 +88,13 @@ export default function AboutPage() {
             foreground={
               <ScrollRevealText triggerStart="top 98%" triggerEnd="top 45%">
                 <h2 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl tracking-wide leading-snug sm:leading-tight md:leading-[4.5rem] font-bigger-display uppercase">
-                  &ldquo;I AM A SELECTIVELY SKILLED CREATIVE DEVELOPER FOCUSING ON HIGH END MOTION, GSAP, THREE.JS AND PERFORMANCE.&rdquo;
+                  &ldquo;A FULL-STACK DEVELOPER CRAFTING HIGH-END WEBSITES, BUILDING PRODUCTION-GRADE SAAS PLATFORMS, AND PUSHING THE BOUNDARIES OF APPLIED AI.&rdquo;
                 </h2>
               </ScrollRevealText>
             }
             background={
               <h2 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl tracking-wide leading-snug sm:leading-tight md:leading-[4.5rem] font-bigger-display uppercase text-[#131212]">
-                &ldquo;I AM A SELECTIVELY SKILLED VIBE CODER WHO CAN TALK ABOUT GSAP AND THREE.JS FOR HOURS WITHOUT WRITING A SINGLE LINE OF CODE.&rdquo;
+                &ldquo;I REVERSE ENGINEER COMPLEX WEBSITES, BULLY AI INTO WRITING FULL SAAS BACKENDS, AND MAKE SURE THE GSAP ANIMATIONS LOOK SICK.&rdquo;
               </h2>
             }
           />
