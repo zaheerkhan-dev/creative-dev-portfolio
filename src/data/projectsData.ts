@@ -24,7 +24,7 @@ export const projectsData: ProjectItem[] = [
   {
     id: "usalef",
     title: "USALEF",
-    img: "/Images/Projects/Project_1_ALEF/ALEF.mp4",
+    img: "/Images/Projects/Project_1_ALEF/Staurga.mp4",
     projectImages: [
       { url: "/Images/Projects/Project_1_ALEF/ALEF-1.png", pageName: "Home Page" },
       { url: "/Images/Projects/Project_1_ALEF/ALEF-2.png", pageName: "Our Mission & Leadership" },
