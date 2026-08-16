@@ -2,7 +2,7 @@
 
 import React, { useRef, useState, useEffect, useMemo, Suspense } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { useGLTF } from "@react-three/drei";
+import { useGLTF, Center } from "@react-three/drei";
 import * as THREE from "three";
 
 interface BookInnerProps {
@@ -16,8 +16,8 @@ interface BookInnerProps {
 function BookMesh({
   containerRef,
   position = [0, 0, 0],
-  rotation = [0.4, -0.6, 0.2],
-  scale = 1.6,
+  rotation = [0.35, -0.4, 0.15],
+  scale = 0.0065,
   glowOrange = false,
 }: BookInnerProps) {
   const { scene } = useGLTF("/3D/viking_book.glb");
@@ -36,10 +36,10 @@ function BookMesh({
           const stdMat = mat as THREE.MeshStandardMaterial;
           if (glowOrange) {
             stdMat.emissive = new THREE.Color("#FF4D00");
-            stdMat.emissiveIntensity = 2.2;
+            stdMat.emissiveIntensity = 2.0;
           } else {
             stdMat.emissive = new THREE.Color("#00E5FF");
-            stdMat.emissiveIntensity = 1.6;
+            stdMat.emissiveIntensity = 1.4;
           }
         }
       }
@@ -102,9 +102,9 @@ function BookMesh({
       const floatRotX = Math.sin(t * 1.2) * 0.06;
       const floatRotZ = Math.cos(t * 1.5) * 0.04;
 
-      const baseRotX = rotation[0] || 0.4;
-      const baseRotY = rotation[1] || -0.6;
-      const baseRotZ = rotation[2] || 0.2;
+      const baseRotX = rotation[0] || 0.35;
+      const baseRotY = rotation[1] || -0.4;
+      const baseRotZ = rotation[2] || 0.15;
       const baseY = position[1] || 0;
 
       groupRef.current.position.y = baseY + floatY;
@@ -115,25 +115,27 @@ function BookMesh({
   });
 
   return (
-    <group ref={groupRef} scale={scale} position={position} rotation={rotation}>
-      <primitive object={clonedScene} />
+    <group ref={groupRef} position={position}>
+      <Center>
+        <primitive object={clonedScene} scale={scale} />
+      </Center>
     </group>
   );
 }
 
-function FallbackBox({ scale = 1.6, position = [0, 0, 0] }: { scale?: number; position?: [number, number, number] }) {
+function FallbackBox({ position = [0, 0, 0] }: { position?: [number, number, number] }) {
   const matRef = useRef<THREE.MeshStandardMaterial>(null);
   useFrame((state) => {
     if (matRef.current) {
       const t = state.clock.elapsedTime;
-      matRef.current.opacity = 0.5 + 0.2 * Math.sin(3 * t);
+      matRef.current.opacity = 0.4 + 0.2 * Math.sin(3 * t);
     }
   });
 
   return (
-    <mesh position={position} scale={0.8 * scale}>
+    <mesh position={position} scale={1.2}>
       <boxGeometry args={[1.2, 0.4, 1.4]} />
-      <meshStandardMaterial ref={matRef} color="#00E5FF" transparent opacity={0.5} roughness={0.8} />
+      <meshStandardMaterial ref={matRef} color="#00E5FF" transparent opacity={0.4} roughness={0.8} />
     </mesh>
   );
 }
@@ -151,9 +153,9 @@ export default function EducationBookModel({
   containerRef,
   className = "",
   glowOrange = false,
-  scale = 1.6,
+  scale = 0.0065,
   position = [0, 0, 0],
-  rotation = [0.4, -0.6, 0.2],
+  rotation = [0.35, -0.4, 0.15],
 }: EducationBookModelProps) {
   const [hovered, setHovered] = useState(false);
 
@@ -166,15 +168,15 @@ export default function EducationBookModel({
       onTouchEnd={() => setHovered(false)}
     >
       <Canvas
-        camera={{ position: [0, 0, 3.8], fov: 45 }}
+        camera={{ position: [0, 0, 3.2], fov: 45 }}
         gl={{ alpha: true, antialias: true }}
         className="w-full h-full"
       >
-        <ambientLight intensity={1.2} />
-        <directionalLight position={[8, 12, 6]} intensity={2.0} />
+        <ambientLight intensity={1.5} />
+        <directionalLight position={[8, 12, 6]} intensity={2.2} />
         <directionalLight position={[-6, -4, -2]} intensity={1.2} color={glowOrange || hovered ? "#FF4D00" : "#00E5FF"} />
-        <pointLight position={[0, 0.5, 0.8]} intensity={glowOrange || hovered ? 2.5 : 1.8} color={glowOrange || hovered ? "#FF4D00" : "#00E5FF"} distance={4} />
-        <Suspense fallback={<FallbackBox scale={scale} position={position} />}>
+        <pointLight position={[0, 0.5, 1]} intensity={glowOrange || hovered ? 2.5 : 1.8} color={glowOrange || hovered ? "#FF4D00" : "#00E5FF"} distance={5} />
+        <Suspense fallback={<FallbackBox position={position} />}>
           <BookMesh
             containerRef={containerRef}
             scale={scale}
