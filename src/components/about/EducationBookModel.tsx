@@ -10,15 +10,13 @@ interface BookInnerProps {
   position?: [number, number, number];
   rotation?: [number, number, number];
   scale?: number;
-  glowOrange?: boolean;
 }
 
 function BookMesh({
   containerRef,
   position = [0, 0, 0],
-  rotation = [0.65, -0.35, 0.15],
+  rotation = [0.5, -0.35, 0.1],
   scale = 0.007,
-  glowOrange = false,
 }: BookInnerProps) {
   const { scene } = useGLTF("/3D/viking_book.glb");
   const groupRef = useRef<THREE.Group>(null);
@@ -26,47 +24,22 @@ function BookMesh({
   const mouseOffset = useRef({ x: 0, y: 0 });
   const targetMouseOffset = useRef({ x: 0, y: 0 });
 
-  // Configure materials: Preserve leather cover and enable vibrant additive rune glow on pages
+  // Ensure double-sided rendering so all open page angles render without culling
   useEffect(() => {
     clonedScene.traverse((obj) => {
       if ("isMesh" in obj && (obj as THREE.Mesh).isMesh) {
         const mesh = obj as THREE.Mesh;
         const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
-        
         materials.forEach((mat) => {
-          if (!mat) return;
-          mat.side = THREE.DoubleSide;
-
-          // Pages & Rune Particles Mesh (Object_1 / lambert5SG)
-          if (mesh.name === "Object_3" || mat.name === "lambert5SG" || (mat as any).alphaMode === "BLEND") {
-            const stdMat = mat as THREE.MeshStandardMaterial;
-            stdMat.transparent = true;
-            stdMat.depthWrite = false;
-            stdMat.blending = THREE.AdditiveBlending; // Makes glowing runes and floating particles luminous
-            
-            if (glowOrange) {
-              stdMat.color = new THREE.Color("#FF4D00");
-              stdMat.emissive = new THREE.Color("#FF4D00");
-              stdMat.emissiveIntensity = 3.0;
-            } else {
-              stdMat.color = new THREE.Color("#00E5FF");
-              stdMat.emissive = new THREE.Color("#00E5FF");
-              stdMat.emissiveIntensity = 2.2;
-            }
-          } else {
-            // Book cover, leather binding, metal clasp (MeshSG)
-            const stdMat = mat as THREE.MeshStandardMaterial;
-            stdMat.roughness = 0.5;
-            stdMat.metalness = 0.4;
-            stdMat.emissive = new THREE.Color(glowOrange ? "#3a1200" : "#001a24");
-            stdMat.emissiveIntensity = 0.5;
+          if (mat) {
+            mat.side = THREE.DoubleSide;
           }
         });
       }
     });
-  }, [clonedScene, glowOrange]);
+  }, [clonedScene]);
 
-  // Clean memory on unmount
+  // Clean GPU memory on unmount
   useEffect(() => {
     return () => {
       clonedScene.traverse((obj) => {
@@ -118,13 +91,13 @@ function BookMesh({
       mouseOffset.current.y += (targetMouseOffset.current.y - mouseOffset.current.y) * 0.08;
 
       // Gentle floating bobbing
-      const floatY = Math.sin(t * 1.8) * 0.12;
-      const floatRotX = Math.sin(t * 1.2) * 0.06;
-      const floatRotZ = Math.cos(t * 1.5) * 0.04;
+      const floatY = Math.sin(t * 1.6) * 0.10;
+      const floatRotX = Math.sin(t * 1.2) * 0.05;
+      const floatRotZ = Math.cos(t * 1.4) * 0.04;
 
-      const baseRotX = rotation[0] || 0.65;
+      const baseRotX = rotation[0] || 0.5;
       const baseRotY = rotation[1] || -0.35;
-      const baseRotZ = rotation[2] || 0.15;
+      const baseRotZ = rotation[2] || 0.1;
       const baseY = position[1] || 0;
 
       groupRef.current.position.y = baseY + floatY;
@@ -163,7 +136,6 @@ function FallbackBox({ position = [0, 0, 0] }: { position?: [number, number, num
 export interface EducationBookModelProps {
   containerRef?: React.RefObject<HTMLDivElement | null>;
   className?: string;
-  glowOrange?: boolean;
   scale?: number;
   position?: [number, number, number];
   rotation?: [number, number, number];
@@ -172,37 +144,26 @@ export interface EducationBookModelProps {
 export default function EducationBookModel({
   containerRef,
   className = "",
-  glowOrange = false,
   scale = 0.007,
   position = [0, 0, 0],
-  rotation = [0.65, -0.35, 0.15],
+  rotation = [0.5, -0.35, 0.1],
 }: EducationBookModelProps) {
-  const [hovered, setHovered] = useState(false);
-
   return (
-    <div
-      className={`cursor-pointer w-full h-full relative ${className}`}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      onTouchStart={() => setHovered(true)}
-      onTouchEnd={() => setHovered(false)}
-    >
+    <div className={`cursor-pointer w-full h-full relative ${className}`}>
       <Canvas
-        camera={{ position: [0, 0, 3.0], fov: 45 }}
-        gl={{ alpha: true, antialias: true, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.2 }}
+        camera={{ position: [0, 0, 3.2], fov: 45 }}
+        gl={{ alpha: true, antialias: true }}
         className="w-full h-full"
       >
-        <ambientLight intensity={0.8} />
-        <directionalLight position={[6, 12, 8]} intensity={1.8} />
-        <directionalLight position={[-6, -4, -2]} intensity={1.0} color={glowOrange || hovered ? "#FF4D00" : "#00E5FF"} />
-        <pointLight position={[0, 0.8, 0.8]} intensity={glowOrange || hovered ? 3.0 : 2.2} color={glowOrange || hovered ? "#FF4D00" : "#00E5FF"} distance={5} />
+        <ambientLight intensity={1.2} />
+        <directionalLight position={[6, 8, 6]} intensity={1.4} />
+        <directionalLight position={[-6, 4, -4]} intensity={0.6} />
         <Suspense fallback={<FallbackBox position={position} />}>
           <BookMesh
             containerRef={containerRef}
             scale={scale}
             position={position}
             rotation={rotation}
-            glowOrange={glowOrange || hovered}
           />
         </Suspense>
       </Canvas>

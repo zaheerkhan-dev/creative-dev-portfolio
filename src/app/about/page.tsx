@@ -144,7 +144,6 @@ export default function AboutPage() {
               <div className="md:h-[27rem] h-[20rem] w-[18rem] sm:w-[22rem] shrink-0">
                 <EducationBookModel
                   containerRef={educationRef}
-                  glowOrange={false}
                   className="w-full h-full"
                 />
               </div>
@@ -165,7 +164,6 @@ export default function AboutPage() {
               <div className="md:h-[27rem] h-[20rem] w-[18rem] sm:w-[22rem] shrink-0">
                 <EducationBookModel
                   containerRef={educationRef}
-                  glowOrange={true}
                   className="w-full h-full"
                 />
               </div>
