@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState, useEffect, useMemo, Suspense } from "react";
+import React, { useRef, useEffect, useMemo, Suspense } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { useGLTF, Center } from "@react-three/drei";
 import * as THREE from "three";
@@ -15,7 +15,7 @@ interface BookInnerProps {
 function BookMesh({
   containerRef,
   position = [0, 0, 0],
-  rotation = [0.5, -0.35, 0.1],
+  rotation = [0.55, -0.35, 0.12],
   scale = 0.007,
 }: BookInnerProps) {
   const { scene } = useGLTF("/3D/viking_book.glb");
@@ -24,7 +24,7 @@ function BookMesh({
   const mouseOffset = useRef({ x: 0, y: 0 });
   const targetMouseOffset = useRef({ x: 0, y: 0 });
 
-  // Ensure double-sided rendering so all open page angles render without culling
+  // Calibrate material properties to prevent emissive blowout and render rich dark paper with crisp glowing runes
   useEffect(() => {
     clonedScene.traverse((obj) => {
       if ("isMesh" in obj && (obj as THREE.Mesh).isMesh) {
@@ -33,6 +33,9 @@ function BookMesh({
         materials.forEach((mat) => {
           if (mat) {
             mat.side = THREE.DoubleSide;
+            if ("emissiveIntensity" in mat) {
+              (mat as THREE.MeshStandardMaterial).emissiveIntensity = 0.4;
+            }
           }
         });
       }
@@ -95,9 +98,9 @@ function BookMesh({
       const floatRotX = Math.sin(t * 1.2) * 0.05;
       const floatRotZ = Math.cos(t * 1.4) * 0.04;
 
-      const baseRotX = rotation[0] || 0.5;
+      const baseRotX = rotation[0] || 0.55;
       const baseRotY = rotation[1] || -0.35;
-      const baseRotZ = rotation[2] || 0.1;
+      const baseRotZ = rotation[2] || 0.12;
       const baseY = position[1] || 0;
 
       groupRef.current.position.y = baseY + floatY;
@@ -146,18 +149,23 @@ export default function EducationBookModel({
   className = "",
   scale = 0.007,
   position = [0, 0, 0],
-  rotation = [0.5, -0.35, 0.1],
+  rotation = [0.55, -0.35, 0.12],
 }: EducationBookModelProps) {
   return (
     <div className={`cursor-pointer w-full h-full relative ${className}`}>
       <Canvas
-        camera={{ position: [0, 0, 3.2], fov: 45 }}
-        gl={{ alpha: true, antialias: true }}
+        camera={{ position: [0, 0, 3.1], fov: 45 }}
+        gl={{
+          alpha: true,
+          antialias: true,
+          toneMapping: THREE.ACESFilmicToneMapping,
+          toneMappingExposure: 0.85,
+        }}
         className="w-full h-full"
       >
-        <ambientLight intensity={1.2} />
-        <directionalLight position={[6, 8, 6]} intensity={1.4} />
-        <directionalLight position={[-6, 4, -4]} intensity={0.6} />
+        <ambientLight intensity={0.5} />
+        <directionalLight position={[6, 10, 6]} intensity={0.9} />
+        <directionalLight position={[-6, 3, -4]} intensity={0.4} color="#00E5FF" />
         <Suspense fallback={<FallbackBox position={position} />}>
           <BookMesh
             containerRef={containerRef}
