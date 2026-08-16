@@ -7,7 +7,6 @@ import ServicesSection from "@/components/about/ServicesSection";
 import WhatTheySaid from "@/components/about/WhatTheySaid";
 import ScrollRevealText from "@/components/about/ScrollRevealText";
 import MarcusAureliusModel from "@/components/about/MarcusAureliusModel";
-import EducationBookModel from "@/components/about/EducationBookModel";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
@@ -20,7 +19,6 @@ export default function AboutPage() {
   const sectionRef = useRef<HTMLElement>(null);
   const heroPathRef = useRef<SVGPathElement>(null);
   const aboutMeRef = useRef<HTMLDivElement>(null);
-  const educationRef = useRef<HTMLDivElement>(null);
   const philosophyRef = useRef<HTMLDivElement>(null);
 
   // Hero SVG organic curve morphing animation on scroll
@@ -131,53 +129,29 @@ export default function AboutPage() {
         </div>
       </div>
 
-      {/* 4. My Education Section with 3D Viking Book & Smudge Reveal */}
-      <div ref={educationRef} className="py-20 md:py-20 border-t border-[#272522]">
-        <p className="font-barlow-condensed text-xs sm:text-sm md:text-base tracking-[.35rem] sm:tracking-[.5rem] pb-8 sm:pb-10 uppercase text-orange font-bold">
+      {/* 4. My Education Section (Full-Width Smudge Mask) */}
+      <div className="relative py-10 md:py-20 border-t border-[#272522]">
+        <p className="font-barlow-condensed text-xs sm:text-sm md:text-base tracking-[.35rem] sm:tracking-[.5rem] pb-8 sm:pb-12 uppercase text-orange font-bold">
           My Education
         </p>
 
-        <SmudgeMask
-          className="!p-0 !-my-0 w-full"
-          foreground={
-            <div className="flex flex-col md:flex-row items-center justify-center max-w-6xl mx-auto px-4 w-full gap-8 md:gap-12">
-              <div className="md:h-[27rem] h-[20rem] w-[18rem] sm:w-[22rem] shrink-0">
-                <EducationBookModel
-                  containerRef={educationRef}
-                  className="w-full h-full"
-                />
-              </div>
-              <div className="md:px-6 px-4 max-w-3xl flex-1 flex flex-col items-center justify-center text-center">
-                <ScrollRevealText triggerStart="top 98%" triggerEnd="top 45%">
-                  <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-[3.25rem] tracking-wide leading-tight md:leading-[3.6rem] lg:leading-[4rem] font-bigger-display uppercase text-foreground">
-                    &ldquo;SELF-TAUGHT BY DESIGN. EDUCATED BY THE OPEN WEB, DRIVEN BY RELENTLESS CURIOSITY, AND REFINED BY REAL-WORLD EXECUTION.&rdquo;
-                  </h2>
-                </ScrollRevealText>
-                <p className="font-barlow-condensed tracking-[.3rem] pt-5 capitalize text-foreground text-sm md:text-base">
-                  ~Self-taught philosophy
-                </p>
-              </div>
-            </div>
-          }
-          background={
-            <div className="flex flex-col md:flex-row items-center justify-center max-w-6xl mx-auto px-4 w-full gap-8 md:gap-12">
-              <div className="md:h-[27rem] h-[20rem] w-[18rem] sm:w-[22rem] shrink-0">
-                <EducationBookModel
-                  containerRef={educationRef}
-                  className="w-full h-full"
-                />
-              </div>
-              <div className="md:px-6 px-4 max-w-3xl flex-1 flex flex-col items-center justify-center text-center">
-                <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-[3.25rem] tracking-wide leading-tight md:leading-[3.6rem] lg:leading-[4rem] font-bigger-display uppercase text-[#131212]">
-                  &ldquo;9TH CLASS DROPOUT WITH A PHD IN GOOGLING, READING MINIFIED SOURCE CODE, AND ARGUING WITH AI AT 4 AM.&rdquo;
+        <div className="max-w-4xl mx-auto px-4">
+          <SmudgeMask
+            className="!p-0 !-my-0"
+            foreground={
+              <ScrollRevealText triggerStart="top 98%" triggerEnd="top 45%">
+                <h2 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl tracking-wide leading-snug sm:leading-tight md:leading-[4.5rem] font-bigger-display uppercase">
+                  &ldquo;SELF-TAUGHT BY DESIGN. EDUCATED BY THE OPEN WEB, DRIVEN BY RELENTLESS CURIOSITY, AND REFINED BY REAL-WORLD EXECUTION.&rdquo;
                 </h2>
-                <p className="font-barlow-condensed tracking-[.3rem] pt-5 capitalize text-[#131212] text-sm md:text-base">
-                  ~Graduated from inspect element
-                </p>
-              </div>
-            </div>
-          }
-        />
+              </ScrollRevealText>
+            }
+            background={
+              <h2 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl tracking-wide leading-snug sm:leading-tight md:leading-[4.5rem] font-bigger-display uppercase text-[#131212]">
+                &ldquo;9TH CLASS DROPOUT WITH A PHD IN GOOGLING, READING MINIFIED SOURCE CODE, AND ARGUING WITH AI AT 4 AM.&rdquo;
+              </h2>
+            }
+          />
+        </div>
       </div>
 
       {/* 5. What They Said Section (Testimonials Circular Dial & Full Review Modal) */}
