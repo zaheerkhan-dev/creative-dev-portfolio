@@ -16,7 +16,7 @@ interface BookInnerProps {
 function BookMesh({
   containerRef,
   position = [0, 0, 0],
-  rotation = [0.35, -0.4, 0.15],
+  rotation = [0.6, -0.4, 0.1],
   scale = 0.0065,
   glowOrange = false,
 }: BookInnerProps) {
@@ -26,22 +26,30 @@ function BookMesh({
   const mouseOffset = useRef({ x: 0, y: 0 });
   const targetMouseOffset = useRef({ x: 0, y: 0 });
 
-  // Apply custom emissive colors based on foreground / background smudge state
+  // Configure materials to preserve the rich hand-painted emissive textures and rune glow
   useEffect(() => {
     clonedScene.traverse((obj) => {
       if ("isMesh" in obj && (obj as THREE.Mesh).isMesh) {
         const mesh = obj as THREE.Mesh;
-        const mat = Array.isArray(mesh.material) ? mesh.material[0] : mesh.material;
-        if (mat && "emissive" in mat) {
-          const stdMat = mat as THREE.MeshStandardMaterial;
-          if (glowOrange) {
-            stdMat.emissive = new THREE.Color("#FF4D00");
-            stdMat.emissiveIntensity = 2.0;
-          } else {
-            stdMat.emissive = new THREE.Color("#00E5FF");
-            stdMat.emissiveIntensity = 1.4;
+        const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+        
+        materials.forEach((mat) => {
+          if (mat) {
+            mat.side = THREE.DoubleSide;
+            
+            if ("emissive" in mat && "emissiveMap" in mat) {
+              const stdMat = mat as THREE.MeshStandardMaterial;
+              if (glowOrange) {
+                stdMat.emissive = new THREE.Color("#FF4D00");
+                stdMat.emissiveIntensity = 2.5;
+              } else {
+                // Restore native embedded glowing runes texture
+                stdMat.emissive = new THREE.Color("#FFFFFF");
+                stdMat.emissiveIntensity = 2.0;
+              }
+            }
           }
-        }
+        });
       }
     });
   }, [clonedScene, glowOrange]);
@@ -102,9 +110,9 @@ function BookMesh({
       const floatRotX = Math.sin(t * 1.2) * 0.06;
       const floatRotZ = Math.cos(t * 1.5) * 0.04;
 
-      const baseRotX = rotation[0] || 0.35;
+      const baseRotX = rotation[0] || 0.6;
       const baseRotY = rotation[1] || -0.4;
-      const baseRotZ = rotation[2] || 0.15;
+      const baseRotZ = rotation[2] || 0.1;
       const baseY = position[1] || 0;
 
       groupRef.current.position.y = baseY + floatY;
@@ -155,7 +163,7 @@ export default function EducationBookModel({
   glowOrange = false,
   scale = 0.0065,
   position = [0, 0, 0],
-  rotation = [0.35, -0.4, 0.15],
+  rotation = [0.6, -0.4, 0.1],
 }: EducationBookModelProps) {
   const [hovered, setHovered] = useState(false);
 
@@ -168,14 +176,14 @@ export default function EducationBookModel({
       onTouchEnd={() => setHovered(false)}
     >
       <Canvas
-        camera={{ position: [0, 0, 3.2], fov: 45 }}
-        gl={{ alpha: true, antialias: true }}
+        camera={{ position: [0, 0, 2.9], fov: 45 }}
+        gl={{ alpha: true, antialias: true, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.1 }}
         className="w-full h-full"
       >
-        <ambientLight intensity={1.5} />
-        <directionalLight position={[8, 12, 6]} intensity={2.2} />
-        <directionalLight position={[-6, -4, -2]} intensity={1.2} color={glowOrange || hovered ? "#FF4D00" : "#00E5FF"} />
-        <pointLight position={[0, 0.5, 1]} intensity={glowOrange || hovered ? 2.5 : 1.8} color={glowOrange || hovered ? "#FF4D00" : "#00E5FF"} distance={5} />
+        <ambientLight intensity={0.6} />
+        <directionalLight position={[6, 10, 8]} intensity={1.2} />
+        <directionalLight position={[-6, -4, -2]} intensity={0.8} color={glowOrange || hovered ? "#FF4D00" : "#00E5FF"} />
+        <pointLight position={[0, 0.6, 0.8]} intensity={glowOrange || hovered ? 2.5 : 1.6} color={glowOrange || hovered ? "#FF4D00" : "#00E5FF"} distance={4} />
         <Suspense fallback={<FallbackBox position={position} />}>
           <BookMesh
             containerRef={containerRef}
