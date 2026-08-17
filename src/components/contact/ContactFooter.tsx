@@ -60,7 +60,7 @@ export default function ContactFooter() {
         if (!nameEl) return;
 
         const split = new SplitText(nameEl, { type: "chars" });
-        gsap.set(split.chars, { yPercent: 120, opacity: 0 });
+        gsap.set(split.chars, { yPercent: 100 });
 
         let isActive = false;
         let isTouching = false;
@@ -73,10 +73,9 @@ export default function ContactFooter() {
           link.setAttribute("data-active", "true");
           gsap.to(split.chars, {
             yPercent: 0,
-            opacity: 1,
             ease: "power4.out",
-            duration: 0.5,
-            stagger: { each: 0.015, from: "center" },
+            duration: 0.75,
+            stagger: { each: 0.01, from: "center" },
             overwrite: "auto",
           });
         };
@@ -86,10 +85,9 @@ export default function ContactFooter() {
           isActive = false;
           link.removeAttribute("data-active");
           gsap.to(split.chars, {
-            yPercent: 120,
-            opacity: 0,
-            ease: "power3.in",
-            duration: 0.35,
+            yPercent: 100,
+            ease: "power4.out",
+            duration: 0.75,
             stagger: { each: 0.01, from: "center" },
             overwrite: "auto",
           });
@@ -171,9 +169,9 @@ export default function ContactFooter() {
                 </svg>
               </div>
 
-              {/* Tooltip on Top with Barlow Condensed */}
+              {/* Original Tooltip on Top with SplitText */}
               <div
-                className="contact-social-name absolute overflow-hidden left-1/2 -top-2 -translate-x-1/2 -translate-y-full whitespace-nowrap uppercase font-semibold tracking-wider text-foreground pointer-events-none font-barlow-condensed text-xs opacity-0 group-hover:opacity-100 group-data-[active=true]:opacity-100 transition-opacity duration-200"
+                className="contact-social-name absolute overflow-hidden left-1/2 top-0 -translate-x-1/2 -translate-y-full whitespace-nowrap uppercase font-bold tracking-wide text-foreground text-xs md:text-sm pointer-events-none pb-1"
                 aria-label={item.name}
               >
                 {item.name}

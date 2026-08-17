@@ -44,7 +44,7 @@ export default function SocialLinks() {
         if (!nameEl) return;
 
         const split = new SplitText(nameEl, { type: "chars" });
-        gsap.set(split.chars, { yPercent: 120, opacity: 0 });
+        gsap.set(split.chars, { yPercent: 100 });
 
         let isActive = false;
         let isTouching = false;
@@ -57,10 +57,9 @@ export default function SocialLinks() {
           link.setAttribute("data-active", "true");
           gsap.to(split.chars, {
             yPercent: 0,
-            opacity: 1,
             ease: "power4.out",
-            duration: 0.5,
-            stagger: { each: 0.015, from: "center" },
+            duration: 0.75,
+            stagger: { each: 0.01, from: "center" },
             overwrite: "auto",
           });
         };
@@ -70,10 +69,9 @@ export default function SocialLinks() {
           isActive = false;
           link.removeAttribute("data-active");
           gsap.to(split.chars, {
-            yPercent: 120,
-            opacity: 0,
-            ease: "power3.in",
-            duration: 0.35,
+            yPercent: 100,
+            ease: "power4.out",
+            duration: 0.75,
             stagger: { each: 0.01, from: "center" },
             overwrite: "auto",
           });
@@ -142,8 +140,8 @@ export default function SocialLinks() {
             <div className="w-full h-full -z-10 absolute top-0 left-0 rounded-full translate-y-full bg-orange group-hover:translate-y-0 group-data-[active=true]:translate-y-0 transition-transform duration-300 ease-in-out" />
           </div>
 
-          {/* Staggered Letter Tooltip with Inter font and guarded opacity */}
-          <div className="social-link-name absolute overflow-hidden -top-7 left-1/2 -translate-x-1/2 md:top-1/2 md:left-full md:ml-3 md:-translate-y-1/2 md:translate-x-0 whitespace-nowrap uppercase font-semibold tracking-wider text-foreground font-barlow-condensed text-[11px] pointer-events-none opacity-0 group-hover:opacity-100 group-data-[active=true]:opacity-100 transition-opacity duration-200">
+          {/* Staggered Letter Tooltip */}
+          <div className="social-link-name absolute overflow-hidden -top-7 left-1/2 -translate-x-1/2 md:top-1/2 md:left-full md:ml-3 md:-translate-y-1/2 md:translate-x-0 whitespace-nowrap uppercase font-bold tracking-wide text-foreground text-xs md:text-sm pointer-events-none">
             {item.name}
           </div>
         </a>
