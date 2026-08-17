@@ -49,17 +49,18 @@ export default function LoadingScreen({ children }: { children: React.ReactNode 
         gsap.set(contentRef.current, { xPercent: 100 });
       }
 
-      const getDigitHeight = (ref: React.RefObject<HTMLDivElement | null>) => {
-        if (!ref.current) return window.innerWidth < 768 ? 40 : 60;
-        const numEl = ref.current.querySelector<HTMLElement>(".num");
-        const h = numEl?.offsetHeight || numEl?.clientHeight || 0;
-        return h > 0 ? h : window.innerWidth < 768 ? 40 : 60;
+      const getDigitHeight = () => {
+        return window.innerWidth < 768 ? 48 : 64;
       };
 
-      const getScrollOffset = (ref: React.RefObject<HTMLDivElement | null>, targetIndex: number) => {
-        const height = getDigitHeight(ref);
+      const getScrollOffset = (targetIndex: number) => {
+        const height = getDigitHeight();
         return { y: -(targetIndex * height) };
       };
+
+      const isMobile = window.innerWidth < 768;
+      const targetWidth1 = isMobile ? "60px" : "200px";
+      const targetWidth2 = isMobile ? "100px" : "280px";
 
       const tl = gsap.timeline({
         onComplete: () => {
@@ -76,14 +77,14 @@ export default function LoadingScreen({ children }: { children: React.ReactNode 
 
       // Phase 1: 0% to ~90%
       tl.to(progressBarRef.current, {
-        width: "30%",
+        width: targetWidth1,
         duration: 1.4,
         ease: "power4.inOut",
       })
         .to(
           digitTenRef.current,
           {
-            ...getScrollOffset(digitTenRef, 9),
+            ...getScrollOffset(9),
             duration: 1.6,
             ease: "power2.inOut",
           },
@@ -92,7 +93,7 @@ export default function LoadingScreen({ children }: { children: React.ReactNode 
         .to(
           digitOneRef.current,
           {
-            ...getScrollOffset(digitOneRef, 20),
+            ...getScrollOffset(20),
             duration: 1.4,
             ease: "power2.inOut",
           },
@@ -101,14 +102,14 @@ export default function LoadingScreen({ children }: { children: React.ReactNode 
 
       // Phase 2: 90% to 100%
       tl.to(digitHundredRef.current, {
-        ...getScrollOffset(digitHundredRef, 1),
+        ...getScrollOffset(1),
         duration: 0.7,
         ease: "power2.inOut",
       })
         .to(
           digitTenRef.current,
           {
-            ...getScrollOffset(digitTenRef, 10),
+            ...getScrollOffset(10),
             duration: 0.7,
             ease: "power2.inOut",
           },
@@ -117,7 +118,7 @@ export default function LoadingScreen({ children }: { children: React.ReactNode 
         .to(
           progressBarRef.current,
           {
-            width: "40%",
+            width: targetWidth2,
             opacity: 0,
             duration: 1.0,
             ease: "power4.out",
@@ -152,35 +153,42 @@ export default function LoadingScreen({ children }: { children: React.ReactNode 
       {/* Preloader Panel */}
       <div
         ref={loaderRef}
-        className="w-[200%] -translate-x-1/2 h-full fixed top-0 left-0 flex bg-foreground text-center items-end justify-end gap-2 p-8 font-bigger-display z-[99]"
+        className="w-[200%] -translate-x-1/2 h-full fixed top-0 left-0 bg-foreground font-bigger-display z-[99]"
       >
-        <p className="w-max text-background text-3xl md:text-5xl uppercase">Loading</p>
-        <div className="counter h-[40px] md:h-[60px] flex text-5xl md:text-7xl font-light text-background overflow-hidden">
-          {/* Hundreds column: 0 -> 1 */}
-          <div ref={digitHundredRef} className="digit">
-            <div className="num">0</div>
-            <div className="num">1</div>
+        <div className="absolute bottom-6 right-[calc(50%+1rem)] sm:bottom-8 sm:right-[calc(50%+2rem)] flex items-end gap-2 sm:gap-3">
+          <p className="w-max text-background text-2xl sm:text-3xl md:text-5xl uppercase leading-none pb-1 md:pb-2">
+            Loading
+          </p>
+          <div className="counter h-[48px] md:h-[64px] flex text-4xl sm:text-5xl md:text-7xl font-light text-background overflow-hidden leading-[48px] md:leading-[64px]">
+            {/* Hundreds column: 0 -> 1 */}
+            <div ref={digitHundredRef} className="digit">
+              <div className="num h-[48px] md:h-[64px] flex items-center justify-center">0</div>
+              <div className="num h-[48px] md:h-[64px] flex items-center justify-center">1</div>
+            </div>
+            {/* Tens column: 0, 1, ..., 9, 0 */}
+            <div ref={digitTenRef} className="digit">
+              {Array.from({ length: 10 }).map((_, r) => (
+                <div key={r} className="num h-[48px] md:h-[64px] flex items-center justify-center">
+                  {r}
+                </div>
+              ))}
+              <div className="num h-[48px] md:h-[64px] flex items-center justify-center">0</div>
+            </div>
+            {/* Ones column: 0..9, 0..9, 0 (21 numbers total) */}
+            <div ref={digitOneRef} className="digit">
+              {Array.from({ length: 21 }).map((_, r) => (
+                <div key={r} className="num h-[48px] md:h-[64px] flex items-center justify-center">
+                  {r % 10}
+                </div>
+              ))}
+            </div>
+            <div className="digit flex items-center h-[48px] md:h-[64px]">%</div>
           </div>
-          {/* Tens column: 0, 1, ..., 9, 0 */}
-          <div ref={digitTenRef} className="digit">
-            {Array.from({ length: 10 }).map((_, r) => (
-              <div key={r} className="num">
-                {r}
-              </div>
-            ))}
-            <div className="num">0</div>
-          </div>
-          {/* Ones column: 0..9, 0..9, 0 (21 numbers total) */}
-          <div ref={digitOneRef} className="digit">
-            {Array.from({ length: 21 }).map((_, r) => (
-              <div key={r} className="num">
-                {r % 10}
-              </div>
-            ))}
-          </div>
-          <div className="digit flex items-center">%</div>
+          <div
+            ref={progressBarRef}
+            className="progress-bar relative top-[-10px] md:top-[-14px] w-0 h-[3px] md:h-[4px] bg-background shrink-0"
+          />
         </div>
-        <div ref={progressBarRef} className="progress-bar relative top-[-15px] w-0 h-[4px] bg-background" />
       </div>
 
       {/* Main Content wrapper */}
