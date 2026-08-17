@@ -192,7 +192,7 @@ export const projectsData: ProjectItem[] = [
     url: "https://yappedin.com",
     client: "YappedIn (Self-Built Product)",
     year: "2026",
-    role: "Solo Engineer — Extension, Audio Pipeline & API Reverse Engineering",
+    role: "Extension Architecture, Audio Pipeline & Reverse Engineering",
     techStack: [
       "Chrome MV3",
       "WXT Framework",
@@ -205,7 +205,7 @@ export const projectsData: ProjectItem[] = [
     description:
       "LinkedIn has had voice notes on mobile for years but never built it for desktop. I wanted to learn how browser extensions work, but not by building something basic — so I reverse-engineered LinkedIn's mobile Voyager API and built a Chrome Extension that injects a **native voice recording studio** directly into LinkedIn's chat UI, including **Shadow DOM chat drawers**.",
     whatIDid:
-      "I built the entire extension solo: a content script injection engine that pierces LinkedIn's Shadow DOM overlays, an in-browser M4A/AAC audio encoding pipeline using mp4box.js (because LinkedIn's player rejects WebM), reverse-engineered iOS spoofing headers to authenticate against LinkedIn's Voyager API, and an MV3-compliant offscreen document architecture for continuous microphone capture.",
+      "I engineered the complete extension architecture from scratch: a content script injection engine that pierces LinkedIn's Shadow DOM overlays, an in-browser M4A/AAC audio encoding pipeline using mp4box.js (because LinkedIn's player rejects WebM), reverse-engineered iOS spoofing headers to authenticate against LinkedIn's Voyager API, and an MV3-compliant offscreen document architecture for continuous microphone capture.",
     howIBuiltThis:
       "Built with the WXT framework on Chrome Manifest V3. The audio pipeline captures PCM via Web Audio API, encodes to AAC, muxes into a valid M4A container client-side using mp4box.js, then uploads directly to LinkedIn's CDN using the user's existing session cookies. Zero backend server — the extension is 100% client-side by design, so user credentials never leave their browser.",
     keyTakeaway:
