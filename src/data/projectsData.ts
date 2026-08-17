@@ -51,7 +51,7 @@ export const projectsData: ProjectItem[] = [
     description:
       "A full-suite B2B agency platform engineered for Staurga, a premier LinkedIn ghostwriting firm. Built with an authoritative marketing frontend, a dedicated **Admin Panel** for content management, automated **Lead Magnet** pipelines, and a streamlined **Hiring Application Portal**.",
     whatIDid:
-      "I designed and engineered the complete ecosystem from the ground up: an executive marketing frontend, a custom **Admin Panel** for zero-code content updates, an SEO-optimized MDX blog system, high-converting **Lead Magnet** automations, and an interactive **Hiring Application Portal** for scaling the writing team.",
+      "I designed and engineered the complete ecosystem from the ground up: an executive marketing frontend, a custom zero-code content management system, an SEO-optimized MDX blog engine, seamless Calendly booking flows, and an interactive recruitment portal for scaling the ghostwriting team.",
     howIBuiltThis:
       "Built with Next.js App Router, React, TypeScript, and Tailwind CSS. The platform features buttery smooth Framer Motion micro-interactions, Lenis smooth scrolling, an MDX content layer for high-ranking authority articles, and custom form automation, all deployed on a zero-maintenance Cloudflare Serverless architecture ($0/mo hosting cost) with structured JSON-LD schema for peak search visibility.",
     keyTakeaway:
