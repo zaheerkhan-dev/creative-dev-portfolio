@@ -172,16 +172,16 @@ export const projectsData: ProjectItem[] = [
       "Fumadocs",
     ],
     description:
-      "An enterprise Cloudflare-native SaaS starter ecosystem and CLI toolkit. Engineered to help builders ship production-grade SaaS in minutes with **12 Pre-Built Starters**, an interactive **PixelCanvas Matrix**, and **$0/mo Edge Infrastructure**.",
+      "Born from frustration — I got tired of rebuilding the same **Auth Systems**, **Billing & Payment Gates**, and **UI Component Libraries** from scratch on every single project. Orunk is the Cloudflare-native SaaS starter ecosystem I built for myself, currently in heavy active development and already powering my own client projects.",
     whatIDid:
-      "I architected the entire monorepo ecosystem from scratch: the interactive PixelCanvas engine with cursor repulsion physics, automated CLI starter generators, Fumadocs documentation pipeline, and Cloudflare serverless backends.",
+      "I architected the entire monorepo from the ground up: production-ready auth flows, Stripe billing pipelines, a reusable UI component registry, the interactive PixelCanvas engine with cursor repulsion physics, automated CLI starter generators, and the Fumadocs documentation system.",
     howIBuiltThis:
-      "Built with Turborepo, Next.js 16, React 19, TypeScript, and Tailwind CSS v4. Features high-performance 2D Canvas pixel physics with anti-magnetic repulsion and traveling aurora shimmer waves, backed by Hono on Cloudflare Workers and D1 SQL databases.",
+      "Built with Turborepo, Next.js 16, React 19, TypeScript, and Tailwind CSS v4. Backed by Hono on Cloudflare Workers and D1 SQL databases with $0/mo edge infrastructure. Features a custom 2D Canvas pixel physics engine with anti-magnetic repulsion and traveling aurora shimmer waves.",
     keyTakeaway:
-      "Building a developer boilerplate ecosystem demands obsessive attention to developer experience and raw performance. Combining custom interactive canvas physics with clean modular architecture sets a new standard for modern boilerplates.",
+      "Stop rebuilding the same infrastructure. I extracted every repeated pattern from my own client work into a single, battle-tested ecosystem that I actively use and scale day by day. Currently in heavy development — shipping new starters and components weekly.",
     tagline: [
-      "Enterprise Cloudflare-native SaaS boilerplate & CLI ecosystem.",
-      "Ship production-grade full-stack applications in minutes with $0/mo overhead.",
+      "The SaaS starter I built because I was tired of repeating myself.",
+      "Currently in heavy development — already powering real client projects.",
     ],
   },
   {
