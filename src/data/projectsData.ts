@@ -34,23 +34,34 @@ export const projectsData: ProjectItem[] = [
       { url: "/Images/Projects/Project_1_Staurga/Staurga-6.png", pageName: "Client Social Proof & Testimonials" },
       { url: "/Images/Projects/Project_1_Staurga/Staurga-7.png", pageName: "Interactive FAQ System" },
       { url: "/Images/Projects/Project_1_Staurga/Staurga-8.png", pageName: "High-Conversion Booking Portal" },
+      { url: "/Images/Projects/Project_1_Staurga/Staurga-9.png", pageName: "Careers & Hiring Application Portal" },
     ],
     url: "https://staurga.com/",
     client: "Shahida Zia (Staurga)",
     year: "2026",
     role: "Full-Stack Development & Conversion Architecture",
-    techStack: ["Next.js", "TypeScript", "Tailwind CSS", "Framer Motion", "Cloudflare Serverless"],
+    techStack: [
+      "Next.js",
+      "TypeScript",
+      "Tailwind CSS",
+      "Framer Motion",
+      "Admin Panel",
+      "MDX Blog Engine",
+      "Hiring Pipeline",
+      "Lead Automation",
+      "Cloudflare Serverless",
+    ],
     description:
-      "A high-converting B2B agency platform engineered for Staurga, a premier LinkedIn ghostwriting and executive personal branding firm. Built to establish immediate authority, articulate high-ticket service offerings, and convert founder traffic into a predictable inbound pipeline.",
+      "A full-suite B2B agency platform engineered for Staurga, a premier LinkedIn ghostwriting and executive personal branding firm. Built with an authoritative marketing frontend, dedicated Admin Panel for content management, SEO-optimized MDX blog system, automated lead magnet funnels, and a streamlined hiring application portal.",
     whatIDid:
-      "I designed and engineered the platform from the ground up, prioritizing crisp executive aesthetics, lightning-fast load times, and conversion-optimized section architecture. I developed custom interactive problem-breakdown modules, dynamic social proof showcases, seamless Calendly booking flows, and clean responsive typography that positions Staurga as an industry leader.",
+      "I designed and engineered the complete ecosystem from the ground up: a conversion-optimized marketing frontend, a dedicated Admin Panel for effortless content management, an SEO-optimized MDX blog system, an automated lead magnet capture pipeline, and an interactive hiring application flow for inbound ghostwriting talent.",
     howIBuiltThis:
-      "Built with Next.js App Router, React, TypeScript, and Tailwind CSS. The platform features buttery smooth Framer Motion micro-interactions and Lenis smooth scrolling, deployed on a high-performance Cloudflare Serverless architecture ($0/mo hosting cost) with structured JSON-LD schema for peak search visibility and instant load times.",
+      "Built with Next.js App Router, React, TypeScript, and Tailwind CSS. The platform features buttery smooth Framer Motion micro-interactions, Lenis smooth scrolling, an MDX content layer for high-ranking authority articles, and custom form automation, all deployed on a zero-maintenance Cloudflare Serverless architecture ($0/mo hosting cost) with structured JSON-LD schema for peak search visibility.",
     keyTakeaway:
-      "For executive B2B platforms, design is the ultimate proxy for credibility. Every typographic detail, layout decision, and micro-interaction must convey authority and clarity, ensuring visitors feel confident booking high-ticket strategic partnerships.",
+      "A high-performing agency platform isn't just a portfolio — it's a scalable business operating system. By unifying client acquisition, editorial authority, lead magnet automation, and talent recruiting into one seamless stack, Staurga is positioned to scale rapidly with zero overhead.",
     tagline: [
-      "A high-converting executive branding platform engineered for Staurga.",
-      "Turning founder presence on LinkedIn into an inbound growth engine.",
+      "A full-suite executive branding platform engineered for Staurga.",
+      "Unifying client acquisition, editorial authority, and automated hiring pipelines.",
     ],
   },
   {
