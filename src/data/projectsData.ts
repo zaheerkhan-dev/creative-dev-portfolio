@@ -36,16 +36,16 @@ export const projectsData: ProjectItem[] = [
       { url: "/Images/Projects/Project_1_Staurga/Staurga-8.png", pageName: "High-Conversion Booking Portal" },
     ],
     url: "https://staurga.com/",
-    client: "Staurga",
+    client: "Shahida Zia (Staurga)",
     year: "2026",
-    role: "Full-Stack Web Development & Conversion Architecture",
-    techStack: ["Next.js", "TypeScript", "Tailwind CSS", "High-Conversion UX", "SEO & Schema"],
+    role: "Full-Stack Development & Conversion Architecture",
+    techStack: ["Next.js", "TypeScript", "Tailwind CSS", "Framer Motion", "Cloudflare Serverless"],
     description:
       "A high-converting B2B agency platform engineered for Staurga, a premier LinkedIn ghostwriting and executive personal branding firm. Built to establish immediate authority, articulate high-ticket service offerings, and convert founder traffic into a predictable inbound pipeline.",
     whatIDid:
-      "I designed and engineered the platform from the ground up, prioritizing crisp executive aesthetics, lightning-fast load times, and conversion-optimized section architecture. I developed custom interactive problem-breakdown modules, dynamic social proof showcases, seamless booking integrations, and clean responsive typography that positions Staurga as an industry leader.",
+      "I designed and engineered the platform from the ground up, prioritizing crisp executive aesthetics, lightning-fast load times, and conversion-optimized section architecture. I developed custom interactive problem-breakdown modules, dynamic social proof showcases, seamless Calendly booking flows, and clean responsive typography that positions Staurga as an industry leader.",
     howIBuiltThis:
-      "Built with Next.js, React, TypeScript, and Tailwind CSS. The platform leverages modern performance optimizations, semantic HTML, structured JSON-LD schema for search visibility, and smooth micro-interactions that elevate the user experience without sacrificing page speed or accessibility.",
+      "Built with Next.js App Router, React, TypeScript, and Tailwind CSS. The platform features buttery smooth Framer Motion micro-interactions and Lenis smooth scrolling, deployed on a high-performance Cloudflare Serverless architecture ($0/mo hosting cost) with structured JSON-LD schema for peak search visibility and instant load times.",
     keyTakeaway:
       "For executive B2B platforms, design is the ultimate proxy for credibility. Every typographic detail, layout decision, and micro-interaction must convey authority and clarity, ensuring visitors feel confident booking high-ticket strategic partnerships.",
     tagline: [
