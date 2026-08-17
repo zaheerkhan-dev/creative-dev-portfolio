@@ -33,15 +33,19 @@ void main() {
     float distortion = 1.0 - 0.04 * r * r;
     vec2 distortedUV = uv * distortion;
 
-    // Cell positioning and tiling
-    vec2 cellCoord = (distortedUV * uZoom + uOffset) / vec2(uCellSize, uCellSize * 0.5625);
+    // Cell positioning and tiling with proper vertical centering
+    vec2 cellSize = vec2(uCellSize, uCellSize * 0.5625);
+    vec2 cellCoord = (distortedUV * uZoom + uOffset) / cellSize + vec2(0.0, 0.5);
     vec2 cellId = floor(cellCoord);
     vec2 cellUV = fract(cellCoord);
 
     vec3 backgroundColor = uBackgroundColor.rgb;
 
-    // Larger 16:9 Image size inside cell (93% width, equal pixel gaps)
-    vec2 imageSize = vec2(0.93, 0.8496);
+    // Single centered horizontal row (cellId.y == 0.0) eliminates vertical duplicate repetition
+    bool inCenterRow = (cellId.y == 0.0);
+
+    // Larger 16:9 Image size inside cell
+    vec2 imageSize = vec2(0.94, 0.88);
     vec2 imageBorder = (vec2(1.0) - imageSize) * 0.5;
 
     vec2 imageUV = (cellUV - imageBorder) / imageSize;
@@ -54,19 +58,19 @@ void main() {
     bool inImageArea = imageUV.x >= 0.0 && imageUV.x <= 1.0 && imageUV.y >= 0.0 && imageUV.y <= 1.0;
 
     // Organic screen boundary dissolve factor (top and bottom shadows only)
-    float fadeY = smoothstep(0.0, 0.16, vUv.y) * smoothstep(1.0, 0.84, vUv.y);
+    float fadeY = smoothstep(0.0, 0.12, vUv.y) * smoothstep(1.0, 0.88, vUv.y);
     float screenDissolve = fadeY;
 
-    // Apply smooth dissolve directly to the image texture alpha so images dissolve into background
-    float finalAlpha = imageAlpha * screenDissolve;
+    // Apply smooth dissolve directly to the image texture alpha (only for center row)
+    float finalAlpha = inCenterRow ? (imageAlpha * screenDissolve) : 0.0;
 
-    // Non-negative modulo index wrapping for seamless 4x4 infinite grid looping
-    float rawIndex = mod(cellId.x + cellId.y * 3.0, uTextureCount);
+    // Seamless horizontal infinite index wrapping
+    float rawIndex = mod(cellId.x, uTextureCount);
     float texIndex = rawIndex < 0.0 ? rawIndex + uTextureCount : rawIndex;
 
     vec3 color = backgroundColor;
 
-    if (inImageArea && finalAlpha > 0.0) {
+    if (inImageArea && inCenterRow && finalAlpha > 0.0) {
         float atlasSize = ceil(sqrt(uTextureCount));
         vec2 atlasPos = vec2(mod(texIndex, atlasSize), floor(texIndex / atlasSize));
         vec2 atlasUV = (atlasPos + imageUV) / atlasSize;
@@ -87,18 +91,10 @@ interface ProjectGalleryProps {
 export default function ProjectGallery({ images }: ProjectGalleryProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Distribute 16 gallery tile items
+  // Load exact unique images without repetitive array padding
   const galleryItems = useMemo(() => {
     if (!images || images.length === 0) return [];
-    if (images.length === 1) return Array(16).fill(images[0].url);
-
-    const result: string[] = [];
-    while (result.length < 16) {
-      images.forEach((img) => {
-        if (result.length < 16) result.push(img.url);
-      });
-    }
-    return result.slice(0, 16);
+    return images.map((img) => img.url);
   }, [images]);
 
   useEffect(() => {
@@ -216,7 +212,7 @@ export default function ProjectGallery({ images }: ProjectGalleryProps) {
         targetZoom = 1.06 * getBaseZoom();
       }
       targetPos.x -= 0.003 * dx;
-      targetPos.y += 0.003 * dy;
+      targetPos.y += 0.0004 * dy;
       lastPos.x = x;
       lastPos.y = y;
     };
@@ -256,6 +252,11 @@ export default function ProjectGallery({ images }: ProjectGalleryProps) {
     let animId: number;
     const animate = () => {
       animId = requestAnimationFrame(animate);
+
+      // Spring return targetPos.y to center
+      if (!isDragging) {
+        targetPos.y += (0.0 - targetPos.y) * 0.08;
+      }
 
       curPos.x += (targetPos.x - curPos.x) * 0.075;
       curPos.y += (targetPos.y - curPos.y) * 0.075;
