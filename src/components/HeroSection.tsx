@@ -11,7 +11,7 @@ export default function HeroSection() {
       {/* Background Portrait Image */}
       <div aria-hidden="true" className="absolute inset-0 z-0 overflow-hidden">
         <Image
-          src="/Images/Home/Home_Image.png"
+          src="/Images/Home/Home_Image.webp"
           alt="Creative developer portrait"
           fill
           sizes="100vw"
@@ -28,7 +28,7 @@ export default function HeroSection() {
       </div>
 
       {/* Interactive WebGL Particle Cloud (78,631 points) */}
-      <ParticleCanvas img="/Images/Home/Home_Particle_Text.png" mixBlend={true} />
+      <ParticleCanvas img="/Images/Home/Home_Particle_Text.webp" mixBlend={true} />
 
       {/* Social Links */}
       <SocialLinks />

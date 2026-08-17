@@ -27,7 +27,7 @@ export const testimonialsData: TestimonialItem[] = [
     role: "Founder",
     company: "Staurga",
     websiteUrl: "https://staurga.com/",
-    avatar: "/Images/About/Shahida_Zia_Client_Img.png",
+    avatar: "/Images/About/Shahida_Zia_Client_Img.webp",
   },
   {
     id: "2",
@@ -39,7 +39,7 @@ export const testimonialsData: TestimonialItem[] = [
     role: "President of Success",
     company: "Expensive Lifestyle Inc",
     websiteUrl: "https://github.com/zaheerkhan-dev",
-    avatar: "/Images/About/AMIR_KHAN_Client_Img.png",
+    avatar: "/Images/About/AMIR_KHAN_Client_Img.webp",
   },
   {
     id: "3",
@@ -51,7 +51,7 @@ export const testimonialsData: TestimonialItem[] = [
     role: "Brand Strategist & Creative Partner",
     company: "Studio Parveen",
     websiteUrl: "https://www.linkedin.com/in/abeeha-parveen/",
-    avatar: "/Images/About/Abeeha_Parveen_Client_Img.png",
+    avatar: "/Images/About/Abeeha_Parveen_Client_Img.webp",
   },
 ];
 

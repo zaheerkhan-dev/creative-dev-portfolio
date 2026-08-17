@@ -16,7 +16,7 @@ function GogglesMesh({
   scale = [0.16, 0.08, 1],
   rotation = [0, 0, 0.2],
 }: GogglesProps) {
-  const texture = useTexture("/Images/About/Goggles.png");
+  const texture = useTexture("/Images/About/Goggles.webp");
   return (
     <mesh position={position} scale={scale} rotation={rotation} renderOrder={999}>
       <planeGeometry args={[1, 1]} />
@@ -198,4 +198,4 @@ export default function MarcusAureliusModel({
 }
 
 useGLTF.preload("/3D/marcus_aurelius.glb");
-useTexture.preload("/Images/About/Goggles.png");
+useTexture.preload("/Images/About/Goggles.webp");

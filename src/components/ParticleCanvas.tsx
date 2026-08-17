@@ -43,7 +43,7 @@ const FRAGMENT_SHADER_SRC = `
 `;
 
 export default function ParticleCanvas({
-  img = "/Images/Home/Home_Particle_Text.png",
+  img = "/Images/Home/Home_Particle_Text.webp",
   mixBlend = true,
 }: ParticleCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
