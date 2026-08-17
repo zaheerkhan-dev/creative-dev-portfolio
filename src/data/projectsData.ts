@@ -109,14 +109,14 @@ export const projectsData: ProjectItem[] = [
     title: "Patreon",
     img: "/Images/Projects/Project_3_Patreon/Patreon.mp4",
     projectImages: [
-      { url: "/Images/Projects/Project_5_Orbit_Matter/orbit-matter-1.png", pageName: "Hero Video Showcase" },
-      { url: "/Images/Projects/Project_5_Orbit_Matter/orbit-matter-2.png", pageName: "Creator Ecosystem" },
-      { url: "/Images/Projects/Project_5_Orbit_Matter/orbit-matter-3.png", pageName: "Membership Tiers" },
-      { url: "/Images/Projects/Project_5_Orbit_Matter/orbit-matter-4.png", pageName: "Interactive Media Player" },
-      { url: "/Images/Projects/Project_5_Orbit_Matter/orbit-matter-5.png", pageName: "Community & Chat Hub" },
-      { url: "/Images/Projects/Project_5_Orbit_Matter/orbit-matter-6.png", pageName: "Creator Earnings Dashboard" },
-      { url: "/Images/Projects/Project_5_Orbit_Matter/orbit-matter-7.png", pageName: "Merchandise & Commerce" },
-      { url: "/Images/Projects/Project_5_Orbit_Matter/orbit-matter-8.png", pageName: "Mobile Experience" },
+      { url: "/Images/Projects/Project_3_Patreon/Patreon-1.jpg", pageName: "Hero Video Showcase & Creator Spotlight" },
+      { url: "/Images/Projects/Project_3_Patreon/Patreon-2.jpg", pageName: "Interactive Creator Carousel" },
+      { url: "/Images/Projects/Project_3_Patreon/Patreon-3.jpg", pageName: "Direct-to-Fan Monetization & Membership" },
+      { url: "/Images/Projects/Project_3_Patreon/Patreon-4.png", pageName: "Community Audio & Video Player Hub" },
+      { url: "/Images/Projects/Project_3_Patreon/Patreon-5.jpg", pageName: "Exclusive Creator Commerce & Digital Products" },
+      { url: "/Images/Projects/Project_3_Patreon/Patreon-6.jpg", pageName: "Creator Business Growth & Analytics" },
+      { url: "/Images/Projects/Project_3_Patreon/Patreon-7.jpg", pageName: "Mobile App Ecosystem & Push Notifications" },
+      { url: "/Images/Projects/Project_3_Patreon/Patreon-8.jpg", pageName: "Join The Creator Revolution CTA" },
     ],
     url: "https://www.patreon.com/",
     client: "Patreon (Platform Reconstruction)",
@@ -132,7 +132,7 @@ export const projectsData: ProjectItem[] = [
       "Lenis",
     ],
     description:
-      "A pixel-perfect creative engineering reconstruction of the Patreon creator homepage. Built to showcase high-performance scroll-linked visual storytelling, interactive WebGL noise shaders, dynamic creator video cards, and smooth Lenis physics.",
+      "A pixel-perfect creative engineering reconstruction of the Patreon creator platform. Built to showcase high-performance **GSAP ScrollTrigger Choreography**, interactive **OGL WebGL Shaders**, and buttery smooth **Lenis Physics**.",
     whatIDid:
       "I engineered the complete frontend interaction layer from scratch: choreographing complex GSAP ScrollTrigger timelines, implementing custom OGL WebGL shader grain effects, building responsive creator media carousels, and optimizing 60fps animation performance across all viewports.",
     howIBuiltThis:
