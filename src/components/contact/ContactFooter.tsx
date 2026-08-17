@@ -16,7 +16,7 @@ const contactSocialLinks: SocialLinkData[] = [
   {
     name: "Linkedin",
     url: "https://www.linkedin.com/in/zakzaheerkhan/",
-    viewBox: "0 0 24 24",
+    viewBox: "0 0 30 30",
     svgPath: (
       <path
         className="fill-foreground group-hover:fill-[#131212] transition-all duration-400 ease-in-out"
@@ -59,15 +59,16 @@ export default function ContactFooter() {
         if (!nameEl) return;
 
         const split = new SplitText(nameEl, { type: "chars" });
-        gsap.set(split.chars, { yPercent: 100 });
+        gsap.set(split.chars, { yPercent: 120, opacity: 0 });
 
         const onEnter = () => {
           link.setAttribute("data-active", "true");
           gsap.to(split.chars, {
             yPercent: 0,
+            opacity: 1,
             ease: "power4.out",
-            duration: 0.75,
-            stagger: { each: 0.01, from: "center" },
+            duration: 0.5,
+            stagger: { each: 0.015, from: "center" },
             overwrite: "auto",
           });
         };
@@ -75,9 +76,10 @@ export default function ContactFooter() {
         const onLeave = () => {
           link.removeAttribute("data-active");
           gsap.to(split.chars, {
-            yPercent: 100,
-            ease: "power4.out",
-            duration: 0.75,
+            yPercent: 120,
+            opacity: 0,
+            ease: "power3.in",
+            duration: 0.35,
             stagger: { each: 0.01, from: "center" },
             overwrite: "auto",
           });
@@ -103,13 +105,13 @@ export default function ContactFooter() {
     >
       <div className="w-full max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 md:gap-4">
         {/* Left: Email */}
-        <div className="flex-1 min-w-0 flex flex-col items-center md:items-start text-xs md:text-sm font-barlow-condensed tracking-wider text-foreground/80 order-2 md:order-1">
-          <span className="text-foreground/50 text-[10px] md:text-xs uppercase tracking-widest mb-0.5">
+        <div className="flex-1 min-w-0 flex flex-col items-center md:items-start text-xs md:text-sm font-inter text-foreground/80 order-2 md:order-1">
+          <span className="text-foreground/50 text-[10px] md:text-xs uppercase tracking-widest mb-0.5 font-medium">
             Direct Contact
           </span>
           <a
             href="mailto:izak3x@gmail.com"
-            className="group relative inline-block text-foreground hover:text-orange transition-colors duration-300 font-semibold pb-0.5"
+            className="group relative inline-block text-foreground hover:text-orange transition-colors duration-300 font-medium pb-0.5 tracking-wide"
           >
             izak3x@gmail.com
             <span className="absolute bottom-0 left-0 w-full h-[1.5px] bg-orange origin-right scale-x-0 transition-transform duration-300 ease-out group-hover:origin-left group-hover:scale-x-100" />
@@ -140,9 +142,9 @@ export default function ContactFooter() {
                 </svg>
               </div>
 
-              {/* Tooltip on Top with SplitText */}
+              {/* Tooltip on Top with Inter Font and Guarded Opacity */}
               <div
-                className="contact-social-name absolute overflow-hidden left-1/2 top-0 -translate-x-1/2 -translate-y-full whitespace-nowrap uppercase font-bold tracking-wide text-foreground pointer-events-none text-xs pb-1"
+                className="contact-social-name absolute overflow-hidden left-1/2 -top-2.5 -translate-x-1/2 -translate-y-full whitespace-nowrap uppercase font-semibold tracking-wider text-foreground pointer-events-none font-inter text-[11px] opacity-0 group-hover:opacity-100 group-data-[active=true]:opacity-100 transition-opacity duration-200"
                 aria-label={item.name}
               >
                 <span>{item.name}</span>

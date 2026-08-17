@@ -43,7 +43,7 @@ export default function SocialLinks() {
         if (!nameEl) return;
 
         const split = new SplitText(nameEl, { type: "chars" });
-        gsap.set(split.chars, { yPercent: 100 });
+        gsap.set(split.chars, { yPercent: 120, opacity: 0 });
 
         let isActive = false;
         let isTouching = false;
@@ -55,9 +55,10 @@ export default function SocialLinks() {
           link.setAttribute("data-active", "true");
           gsap.to(split.chars, {
             yPercent: 0,
+            opacity: 1,
             ease: "power4.out",
-            duration: 0.75,
-            stagger: { each: 0.01, from: "center" },
+            duration: 0.5,
+            stagger: { each: 0.015, from: "center" },
             overwrite: "auto",
           });
         };
@@ -67,9 +68,10 @@ export default function SocialLinks() {
           isActive = false;
           link.removeAttribute("data-active");
           gsap.to(split.chars, {
-            yPercent: 100,
-            ease: "power4.out",
-            duration: 0.75,
+            yPercent: 120,
+            opacity: 0,
+            ease: "power3.in",
+            duration: 0.35,
             stagger: { each: 0.01, from: "center" },
             overwrite: "auto",
           });
@@ -124,8 +126,8 @@ export default function SocialLinks() {
           {/* Circle Icon Button */}
           <div className="w-10 h-10 md:w-11 md:h-11 z-20 overflow-hidden relative bg-[#2a2929] rounded-full p-2.5 md:p-3 group-hover:scale-90 group-data-[active=true]:scale-90 transition-transform duration-300 flex items-center justify-center">
             <svg
-              viewBox="0 0 24 24"
-              className={`w-full h-full ${item.isCustomOffset ? "-translate-x-[1px]" : ""}`}
+              viewBox={item.name === "Linkedin" ? "0 0 30 30" : "0 0 24 24"}
+              className="w-full h-full"
               xmlns="http://www.w3.org/2000/svg"
             >
               <path
@@ -138,8 +140,8 @@ export default function SocialLinks() {
             <div className="w-full h-full -z-10 absolute top-0 left-0 rounded-full translate-y-full bg-orange group-hover:translate-y-0 group-data-[active=true]:translate-y-0 transition-transform duration-300 ease-in-out" />
           </div>
 
-          {/* Staggered Letter Tooltip */}
-          <div className="social-link-name absolute overflow-hidden -top-7 left-1/2 -translate-x-1/2 md:top-1/2 md:left-full md:ml-3 md:-translate-y-1/2 md:translate-x-0 whitespace-nowrap uppercase font-bold tracking-wide text-foreground text-xs md:text-sm pointer-events-none">
+          {/* Staggered Letter Tooltip with Inter font and guarded opacity */}
+          <div className="social-link-name absolute overflow-hidden -top-7 left-1/2 -translate-x-1/2 md:top-1/2 md:left-full md:ml-3 md:-translate-y-1/2 md:translate-x-0 whitespace-nowrap uppercase font-semibold tracking-wider text-foreground font-inter text-[11px] pointer-events-none opacity-0 group-hover:opacity-100 group-data-[active=true]:opacity-100 transition-opacity duration-200">
             {item.name}
           </div>
         </a>
