@@ -177,7 +177,7 @@ export default function ProjectDetailView({ id }: { id: string }) {
               <span className="font-barlow-condensed text-xs uppercase tracking-widest text-foreground/50 font-bold">
                 Client
               </span>
-              <span className="font-inter text-sm md:text-base text-foreground font-semibold">
+              <span className="font-barlow-condensed text-sm md:text-base text-foreground font-semibold">
                 {project.client}
               </span>
             </div>
@@ -185,7 +185,7 @@ export default function ProjectDetailView({ id }: { id: string }) {
               <span className="font-barlow-condensed text-xs uppercase tracking-widest text-foreground/50 font-bold">
                 Year
               </span>
-              <span className="font-inter text-sm md:text-base text-foreground font-semibold">
+              <span className="font-barlow-condensed text-sm md:text-base text-foreground font-semibold">
                 {project.year}
               </span>
             </div>
@@ -196,7 +196,7 @@ export default function ProjectDetailView({ id }: { id: string }) {
             <span className="font-barlow-condensed text-xs uppercase tracking-widest text-foreground/50 font-bold">
               Role & Scope
             </span>
-            <span className="font-inter text-sm md:text-base text-foreground font-semibold leading-relaxed">
+            <span className="font-barlow-condensed text-sm md:text-base text-foreground font-semibold leading-relaxed">
               {project.role}
             </span>
           </div>
@@ -210,7 +210,7 @@ export default function ProjectDetailView({ id }: { id: string }) {
               {project.techStack.map((tech) => (
                 <span
                   key={tech}
-                  className="px-2.5 py-1 rounded bg-white/5 border border-white/10 text-white/90 font-inter text-xs font-medium tracking-wide whitespace-nowrap"
+                  className="px-2.5 py-1 rounded bg-white/5 border border-white/10 text-white/90 font-barlow-condensed text-xs font-medium tracking-wide whitespace-nowrap"
                 >
                   {tech}
                 </span>
@@ -254,7 +254,7 @@ export default function ProjectDetailView({ id }: { id: string }) {
           <p className="font-barlow-condensed tracking-[.4rem] uppercase text-orange text-xs md:text-sm font-bold mb-4 md:mb-6">
             OVERVIEW & VISION
           </p>
-          <p className="text-lg sm:text-xl md:text-2xl font-inter text-foreground/90 font-normal leading-relaxed md:leading-[2.5rem] tracking-normal max-w-3xl mx-auto">
+          <p className="text-lg sm:text-xl md:text-2xl font-barlow-condensed text-foreground/90 font-normal leading-relaxed md:leading-[2.5rem] tracking-normal max-w-3xl mx-auto">
             {renderHighlightedText(project.description)}
           </p>
         </div>
@@ -264,7 +264,7 @@ export default function ProjectDetailView({ id }: { id: string }) {
           <p className="font-barlow-condensed tracking-[.4rem] uppercase text-orange text-xs md:text-sm font-bold mb-4 md:mb-6">
             MY ROLE & SCOPE
           </p>
-          <p className="text-lg sm:text-xl md:text-2xl font-inter text-foreground/90 font-normal leading-relaxed md:leading-[2.5rem] tracking-normal max-w-3xl mx-auto">
+          <p className="text-lg sm:text-xl md:text-2xl font-barlow-condensed text-foreground/90 font-normal leading-relaxed md:leading-[2.5rem] tracking-normal max-w-3xl mx-auto">
             {renderHighlightedText(project.whatIDid)}
           </p>
         </div>
@@ -274,7 +274,7 @@ export default function ProjectDetailView({ id }: { id: string }) {
           <p className="font-barlow-condensed tracking-[.4rem] uppercase text-orange text-xs md:text-sm font-bold mb-4 md:mb-6">
             TECH & IMPLEMENTATION
           </p>
-          <p className="text-lg sm:text-xl md:text-2xl font-inter text-foreground/90 font-normal leading-relaxed md:leading-[2.5rem] tracking-normal max-w-3xl mx-auto">
+          <p className="text-lg sm:text-xl md:text-2xl font-barlow-condensed text-foreground/90 font-normal leading-relaxed md:leading-[2.5rem] tracking-normal max-w-3xl mx-auto">
             {renderHighlightedText(project.howIBuiltThis)}
           </p>
         </div>
@@ -285,7 +285,7 @@ export default function ProjectDetailView({ id }: { id: string }) {
             <p className="font-barlow-condensed tracking-[.4rem] uppercase text-orange text-xs md:text-sm font-bold mb-4 md:mb-6">
               KEY TAKEAWAYS & LESSONS
             </p>
-            <p className="text-lg sm:text-xl md:text-2xl font-inter text-foreground/90 font-normal leading-relaxed md:leading-[2.5rem] tracking-normal max-w-3xl mx-auto">
+            <p className="text-lg sm:text-xl md:text-2xl font-barlow-condensed text-foreground/90 font-normal leading-relaxed md:leading-[2.5rem] tracking-normal max-w-3xl mx-auto">
               {renderHighlightedText(project.keyTakeaway)}
             </p>
           </div>

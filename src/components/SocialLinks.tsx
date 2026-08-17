@@ -141,7 +141,7 @@ export default function SocialLinks() {
           </div>
 
           {/* Staggered Letter Tooltip with Inter font and guarded opacity */}
-          <div className="social-link-name absolute overflow-hidden -top-7 left-1/2 -translate-x-1/2 md:top-1/2 md:left-full md:ml-3 md:-translate-y-1/2 md:translate-x-0 whitespace-nowrap uppercase font-semibold tracking-wider text-foreground font-inter text-[11px] pointer-events-none opacity-0 group-hover:opacity-100 group-data-[active=true]:opacity-100 transition-opacity duration-200">
+          <div className="social-link-name absolute overflow-hidden -top-7 left-1/2 -translate-x-1/2 md:top-1/2 md:left-full md:ml-3 md:-translate-y-1/2 md:translate-x-0 whitespace-nowrap uppercase font-semibold tracking-wider text-foreground font-barlow-condensed text-[11px] pointer-events-none opacity-0 group-hover:opacity-100 group-data-[active=true]:opacity-100 transition-opacity duration-200">
             {item.name}
           </div>
         </a>

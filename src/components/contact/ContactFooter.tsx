@@ -105,7 +105,7 @@ export default function ContactFooter() {
     >
       <div className="w-full max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 md:gap-4">
         {/* Left: Email */}
-        <div className="flex-1 min-w-0 flex flex-col items-center md:items-start text-xs md:text-sm font-inter text-foreground/80 order-2 md:order-1">
+        <div className="flex-1 min-w-0 flex flex-col items-center md:items-start text-xs md:text-sm font-barlow-condensed text-foreground/80 order-2 md:order-1">
           <span className="text-foreground/50 text-[10px] md:text-xs uppercase tracking-widest mb-0.5 font-medium">
             Direct Contact
           </span>
@@ -144,7 +144,7 @@ export default function ContactFooter() {
 
               {/* Tooltip on Top with Inter Font and Guarded Opacity */}
               <div
-                className="contact-social-name absolute overflow-hidden left-1/2 -top-2.5 -translate-x-1/2 -translate-y-full whitespace-nowrap uppercase font-semibold tracking-wider text-foreground pointer-events-none font-inter text-[11px] opacity-0 group-hover:opacity-100 group-data-[active=true]:opacity-100 transition-opacity duration-200"
+                className="contact-social-name absolute overflow-hidden left-1/2 -top-2.5 -translate-x-1/2 -translate-y-full whitespace-nowrap uppercase font-semibold tracking-wider text-foreground pointer-events-none font-barlow-condensed text-[11px] opacity-0 group-hover:opacity-100 group-data-[active=true]:opacity-100 transition-opacity duration-200"
                 aria-label={item.name}
               >
                 <span>{item.name}</span>
