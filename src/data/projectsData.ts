@@ -46,10 +46,6 @@ export const projectsData: ProjectItem[] = [
       "TypeScript",
       "Tailwind CSS",
       "Framer Motion",
-      "Admin Panel",
-      "MDX Blog Engine",
-      "Hiring Pipeline",
-      "Lead Automation",
       "Cloudflare Serverless",
     ],
     description:
