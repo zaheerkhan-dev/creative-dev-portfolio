@@ -35,6 +35,7 @@ export const projectsData: ProjectItem[] = [
       { url: "/Images/Projects/Project_1_Staurga/Staurga-7.png", pageName: "Interactive FAQ System" },
       { url: "/Images/Projects/Project_1_Staurga/Staurga-8.png", pageName: "High-Conversion Booking Portal" },
       { url: "/Images/Projects/Project_1_Staurga/Staurga-9.png", pageName: "Careers & Hiring Application Portal" },
+      { url: "/Images/Projects/Project_1_Staurga/Staurga-10.png", pageName: "Editorial Blog & Thought Leadership Hub" },
     ],
     url: "https://staurga.com/",
     client: "Shahida Zia (Staurga)",
