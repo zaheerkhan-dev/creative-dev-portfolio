@@ -4,6 +4,7 @@ import React, { useRef } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { SplitText } from "@/lib/splitText";
+import { playHover } from "@/lib/soundEffects";
 
 interface SocialLinkItem {
   name: string;
@@ -52,6 +53,7 @@ export default function SocialLinks() {
         const handleEnter = () => {
           if (isActive) return;
           isActive = true;
+          playHover();
           link.setAttribute("data-active", "true");
           gsap.to(split.chars, {
             yPercent: 0,

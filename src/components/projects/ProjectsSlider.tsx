@@ -4,6 +4,7 @@ import React, { useRef, useState, useEffect, useCallback } from "react";
 import gsap from "gsap";
 import { projectsData, ProjectItem } from "@/data/projectsData";
 import { usePageTransition } from "@/components/TransitionRouter";
+import { playClick } from "@/lib/soundEffects";
 
 export default function ProjectsSlider() {
   const { navigate } = usePageTransition();
@@ -422,6 +423,7 @@ export default function ProjectsSlider() {
 
     const p = getProject(activeIdx);
     if (p?.id) {
+      playClick();
       navigate(`/projects/${p.id}`);
     }
   };
@@ -449,6 +451,7 @@ export default function ProjectsSlider() {
         <button
           onClick={(e) => {
             e.stopPropagation();
+            playClick();
             targetPos.current = Math.ceil(targetPos.current) - 1;
           }}
           aria-label="Previous Project"
@@ -473,6 +476,7 @@ export default function ProjectsSlider() {
         <button
           onClick={(e) => {
             e.stopPropagation();
+            playClick();
             targetPos.current = Math.floor(targetPos.current) + 1;
           }}
           aria-label="Next Project"

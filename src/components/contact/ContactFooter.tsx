@@ -4,6 +4,7 @@ import React, { useRef } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { SplitText } from "@/lib/splitText";
+import { playHover } from "@/lib/soundEffects";
 
 interface SocialLinkData {
   name: string;
@@ -128,6 +129,7 @@ export default function ContactFooter() {
               rel="noopener noreferrer"
               className="group contact-social-link relative select-none [-webkit-touch-callout:none] cursor-pointer"
               aria-label={item.name}
+              onMouseEnter={() => playHover()}
             >
               <div className="w-12 h-12 md:w-14 md:h-14 z-20 overflow-hidden relative bg-[#2a2929] rounded-full p-3.5 md:p-4 hover:scale-90 group-data-[active=true]:scale-90 transition-transform duration-300 flex items-center justify-center">
                 {/* Circular Orange Expand */}

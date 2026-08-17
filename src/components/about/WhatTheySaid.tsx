@@ -8,6 +8,7 @@ import { useGSAP } from "@gsap/react";
 import { Pause, Play, X } from "lucide-react";
 import SmudgeMask from "./SmudgeMask";
 import ScrollRevealText from "./ScrollRevealText";
+import { playClick } from "@/lib/soundEffects";
 
 export interface Testimonial {
   id: string;
@@ -303,7 +304,7 @@ export default function WhatTheySaid({
         <div className="relative w-full md:w-52 h-[140px] md:h-[380px] flex items-center justify-center md:justify-end shrink-0 my-1 md:my-0">
           {/* Pause / Resume Button */}
           <button
-            onClick={() => setIsPlaying((p) => !p)}
+            onClick={() => { playClick(); setIsPlaying((p) => !p); }}
             aria-label={isPlaying ? "Pause autoplay" : "Resume autoplay"}
             className="absolute left-1/2 -translate-x-1/2 -top-5 md:-left-3 md:top-1/2 md:translate-x-0 md:-translate-y-1/2 w-9 h-9 md:w-11 md:h-11 rounded-full border border-foreground/30 bg-background/80 hover:bg-orange hover:border-orange hover:text-white transition-all flex items-center justify-center cursor-pointer text-foreground/80 z-20 backdrop-blur-sm shadow-md hover:scale-110"
           >
@@ -336,7 +337,7 @@ export default function WhatTheySaid({
             return (
               <button
                 key={item.id}
-                onClick={() => selectReview(idx)}
+                onClick={() => { playClick(); selectReview(idx); }}
                 aria-label={`View review from ${item.name}`}
                 style={{
                   transform: `translate3d(${x}px, ${y}px, 0) scale(${isActive ? 1.08 : 0.8})`,
@@ -417,7 +418,7 @@ export default function WhatTheySaid({
             >
               {/* Close Button */}
               <button
-                onClick={() => setModalItem(null)}
+                onClick={() => { playClick(); setModalItem(null); }}
                 aria-label="Close modal"
                 className="absolute top-4 right-4 sm:top-6 sm:right-6 w-9 h-9 rounded-full bg-white/5 border border-white/15 text-foreground flex items-center justify-center hover:bg-orange hover:border-orange hover:text-white transition-all cursor-pointer z-10"
               >

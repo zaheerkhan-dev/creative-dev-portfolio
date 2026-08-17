@@ -9,6 +9,7 @@ import { useGSAP } from "@gsap/react";
 import { projectsData } from "@/data/projectsData";
 import { SplitText } from "@/lib/splitText";
 import ProjectGallery from "@/components/projects/ProjectGallery";
+import { playClick } from "@/lib/soundEffects";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -225,6 +226,7 @@ export default function ProjectDetailView({ id }: { id: string }) {
               href={project.url}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() => playClick()}
               onMouseEnter={() => liveBtnTl.current?.play()}
               onMouseLeave={() => liveBtnTl.current?.reverse()}
               className="group relative overflow-hidden tracking-[.2rem] text-sm md:text-base uppercase font-bold font-barlow-condensed inline-flex items-center cursor-pointer pb-0.5"
@@ -316,6 +318,7 @@ export default function ProjectDetailView({ id }: { id: string }) {
         {/* Previous Project Card */}
         <Link
           href={`/projects/${prevProject.id}`}
+          onClick={() => playClick()}
           className="relative w-full md:w-1/2 h-1/2 md:h-full group overflow-hidden border-b md:border-b-0 md:border-r border-white/10"
         >
           {prevProject.img.endsWith(".mp4") || prevProject.img.endsWith(".webm") ? (
@@ -349,6 +352,7 @@ export default function ProjectDetailView({ id }: { id: string }) {
         {/* Next Project Card */}
         <Link
           href={`/projects/${nextProject.id}`}
+          onClick={() => playClick()}
           className="relative w-full md:w-1/2 h-1/2 md:h-full group overflow-hidden"
         >
           {nextProject.img.endsWith(".mp4") || nextProject.img.endsWith(".webm") ? (

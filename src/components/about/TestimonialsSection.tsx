@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Image from "next/image";
 import SmudgeMask from "./SmudgeMask";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { playClick } from "@/lib/soundEffects";
 
 export interface TestimonialItem {
   id: string;
@@ -125,7 +126,7 @@ export default function TestimonialsSection() {
           {/* Prev / Next Arrows */}
           <div className="flex items-center gap-3">
             <button
-              onClick={handlePrev}
+              onClick={() => { playClick(); handlePrev(); }}
               aria-label="Previous review"
               className="w-12 h-12 rounded-full border border-[#333] bg-[#1c1c20] hover:bg-orange hover:text-[#131212] hover:border-orange flex items-center justify-center text-foreground transition-all duration-300 cursor-pointer"
             >
@@ -135,7 +136,7 @@ export default function TestimonialsSection() {
               0{currentIndex + 1} / 0{testimonialsData.length}
             </span>
             <button
-              onClick={handleNext}
+              onClick={() => { playClick(); handleNext(); }}
               aria-label="Next review"
               className="w-12 h-12 rounded-full border border-[#333] bg-[#1c1c20] hover:bg-orange hover:text-[#131212] hover:border-orange flex items-center justify-center text-foreground transition-all duration-300 cursor-pointer"
             >

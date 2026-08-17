@@ -7,6 +7,7 @@ import { useGSAP } from "@gsap/react";
 import { useAppContext } from "@/context/AppContext";
 import { SplitText } from "@/lib/splitText";
 import { usePageTransition } from "./TransitionRouter";
+import { playClick } from "@/lib/soundEffects";
 
 const navLinks = ["Home", "About", "Projects", "Contact"];
 
@@ -282,6 +283,7 @@ export default function Navbar() {
 
   const handleNavClick = (e: React.MouseEvent, href: string) => {
     e.preventDefault();
+    playClick();
     setIsMobileMenuOpen(false);
     navigate(href);
   };
@@ -356,7 +358,7 @@ export default function Navbar() {
           aria-label="Menu"
           aria-controls="mobile-menu"
           aria-expanded={isMobileMenuOpen}
-          onClick={() => setIsMobileMenuOpen((prev) => !prev)}
+          onClick={() => { playClick(); setIsMobileMenuOpen((prev) => !prev); }}
         >
           {/* Hamburger Close Icon (3 horizontal bars) */}
           <div className="hamburger-close w-full h-full overflow-hidden flex flex-col gap-1 justify-center items-center">

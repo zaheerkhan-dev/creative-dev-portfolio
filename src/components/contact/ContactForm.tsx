@@ -4,6 +4,7 @@ import React, { useRef, useState, useMemo, useCallback } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { SplitText } from "@/lib/splitText";
+import { playClick } from "@/lib/soundEffects";
 
 export default function ContactForm() {
   const formRef = useRef<HTMLFormElement>(null);
@@ -239,6 +240,7 @@ export default function ContactForm() {
     e.preventDefault();
     if (!formRef.current) return;
 
+    playClick();
     setIsDisabled(true);
     statusRef.current = "sending";
     submitTimelineRef.current?.restart();
