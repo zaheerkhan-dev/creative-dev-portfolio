@@ -32,6 +32,7 @@ export default function ProjectsSlider() {
     (side: "left" | "right", idx: number): HTMLDivElement => {
       const p = getProject(idx);
       const mediaSrc = p.img || p.projectImages[0]?.url;
+      const fallbackImg = p.projectImages && p.projectImages[0]?.url ? p.projectImages[0].url : "";
       const total = projectsData.length;
       const currentNum = String((((idx % total) + total) % total) + 1).padStart(2, "0");
       const totalNum = String(total).padStart(2, "0");
@@ -49,34 +50,37 @@ export default function ProjectsSlider() {
       const isVideo =
         mediaSrc.endsWith(".mp4") || mediaSrc.endsWith(".webm");
       const mediaHtml = isVideo
-        ? `<video src="${mediaSrc}" autoplay loop muted playsinline class="w-full h-full object-cover block will-change-transform filter grayscale contrast-110 brightness-95"></video>`
+        ? `
+          <img src="${fallbackImg}" alt="${p.title}" class="absolute inset-0 w-full h-full object-cover block filter grayscale contrast-110 brightness-95" />
+          <video src="${mediaSrc}" poster="${fallbackImg}" autoplay loop muted playsinline preload="auto" class="w-full h-full object-cover block will-change-transform filter grayscale contrast-110 brightness-95"></video>
+        `
         : `<img src="${mediaSrc}" alt="${p.title}" class="w-full h-full object-cover block will-change-transform filter grayscale contrast-110 brightness-95" />`;
 
       slide.innerHTML = `
         <div class="img-wrapper absolute top-0 ${
           side === "left" ? "left-0" : "right-0"
-        } w-[100vw] max-w-none h-full pointer-events-none">
+        } w-[100vw] max-w-none h-full pointer-events-none z-0">
             ${mediaHtml}
         </div>
-        <div class="overlay absolute inset-0 bg-black/20 pointer-events-none"></div>
+        <div class="overlay absolute inset-0 bg-black/25 pointer-events-none z-10"></div>
 
         <!-- Bottom Gradient Shadow for high contrast legibility -->
         <div class="bottom-gradient absolute bottom-0 ${
           side === "left" ? "left-0" : "right-0"
-        } w-[100vw] h-[60vh] bg-gradient-to-t from-black/95 via-black/60 to-transparent pointer-events-none"></div>
+        } w-[100vw] h-[60vh] bg-gradient-to-t from-black/95 via-black/60 to-transparent pointer-events-none z-20"></div>
 
         <div class="copy absolute top-0 ${
           side === "left" ? "left-0" : "right-0"
-        } w-[100vw] h-full pointer-events-none will-change-transform flex flex-col items-center justify-end text-center p-6 pb-20 sm:pb-24 md:pb-16 lg:pb-20">
+        } w-[100vw] h-full pointer-events-none will-change-transform flex flex-col items-center justify-end text-center p-6 pb-20 sm:pb-24 md:pb-16 lg:pb-20 z-30">
             <!-- Desktop Bottom Left Project Number -->
-            <div class="hidden md:block absolute bottom-8 left-6 md:bottom-12 md:left-12 lg:bottom-16 lg:left-16 pointer-events-none z-20">
+            <div class="hidden md:block absolute bottom-8 left-6 md:bottom-12 md:left-12 lg:bottom-16 lg:left-16 pointer-events-none z-30">
                 <span class="hover-text-target font-barlow-condensed tracking-[.35rem] text-lg md:text-2xl lg:text-3xl font-bold text-white/90 uppercase inline-block pointer-events-auto drop-shadow-lg">
                     ${numLabel}
                 </span>
             </div>
 
             <!-- Bottom Center Project Name, Paragraph & Mobile Number -->
-            <div class="flex flex-col items-center justify-end max-w-4xl px-4 pointer-events-none z-20 w-full">
+            <div class="flex flex-col items-center justify-end max-w-4xl px-4 pointer-events-none z-30 w-full">
                 <!-- Mobile Project Number -->
                 <div class="md:hidden mb-4 pointer-events-none">
                     <span class="hover-text-target font-barlow-condensed tracking-[.4rem] text-xs font-semibold text-white/80 uppercase inline-block pointer-events-auto">
@@ -91,10 +95,10 @@ export default function ProjectsSlider() {
 
                 <!-- 2-Line Brief Description -->
                 <div class="relative max-w-3xl text-center pointer-events-none flex flex-col items-center gap-2">
-                    <p class="hover-text-target pointer-events-auto inline-block text-sm sm:text-base md:text-lg lg:text-xl font-normal text-white/80 font-barlow-condensed tracking-[.15rem] leading-relaxed drop-shadow-md select-none m-0">
+                    <p class="hover-text-target pointer-events-auto inline-block text-sm sm:text-base md:text-lg lg:text-xl font-normal text-white/90 font-inter tracking-normal leading-relaxed drop-shadow-md select-none m-0">
                         ${taglines[0]}
                     </p>
-                    <p class="hover-text-target pointer-events-auto inline-block text-sm sm:text-base md:text-lg lg:text-xl font-normal text-white/80 font-barlow-condensed tracking-[.15rem] leading-relaxed drop-shadow-md select-none m-0">
+                    <p class="hover-text-target pointer-events-auto inline-block text-sm sm:text-base md:text-lg lg:text-xl font-normal text-white/90 font-inter tracking-normal leading-relaxed drop-shadow-md select-none m-0">
                         ${taglines[1]}
                     </p>
 
@@ -110,16 +114,17 @@ export default function ProjectsSlider() {
       `;
 
       if (isVideo) {
-        setTimeout(() => {
-          const video = slide.querySelector("video");
-          const otherSideMap = side === "left" ? rightMap.current : leftMap.current;
-          const otherSlide = otherSideMap.get(idx);
-          const otherVideo = otherSlide?.querySelector("video");
-          if (video && otherVideo && otherVideo.readyState >= 2) {
-            video.currentTime = otherVideo.currentTime;
-            video.play().catch(() => {});
-          }
-        }, 50);
+        const video = slide.querySelector("video");
+        if (video) {
+          const tryPlay = () => {
+            if (video.paused) {
+              video.play().catch(() => {});
+            }
+          };
+          video.addEventListener("canplay", tryPlay, { once: true });
+          video.addEventListener("loadeddata", tryPlay, { once: true });
+          tryPlay();
+        }
       }
 
       return slide;
@@ -145,14 +150,15 @@ export default function ProjectsSlider() {
   // Animation Frame Loop
   useEffect(() => {
     let animId: number;
+    let lastSyncTime = 0;
     const leftEl = leftMap.current;
     const rightEl = rightMap.current;
 
-    const render = () => {
+    const render = (timestamp: number) => {
       curPos.current += (targetPos.current - curPos.current) * 0.07;
       const pos = curPos.current;
-      const minIdx = Math.floor(pos) - 3;
-      const maxIdx = Math.floor(pos) + 3 + 1;
+      const minIdx = Math.floor(pos) - 1;
+      const maxIdx = Math.floor(pos) + 1 + 1;
 
       const currentActive =
         ((Math.round(pos - 1) % projectsData.length) + projectsData.length) %
@@ -209,11 +215,11 @@ export default function ProjectsSlider() {
           slide.style.display = "block";
           slide.style.clipPath = getPolygonClip(side, l);
 
-          const media = slide.querySelector<HTMLElement>("img, video");
-          if (media) {
-            const drift = (1 - d) * 25 * driftDir;
-            media.style.transform = `translateY(${drift}%) scale(1.25)`;
-          }
+          const media = slide.querySelectorAll<HTMLElement>("img, video");
+          const drift = (1 - d) * 25 * driftDir;
+          media.forEach((m) => {
+            m.style.transform = `translateY(${drift}%) scale(1.25)`;
+          });
 
           const isCurrentActive = Math.round(pos - 1) === i;
           slide.querySelectorAll<HTMLElement>(".hover-text-target").forEach((el) => {
@@ -228,27 +234,29 @@ export default function ProjectsSlider() {
         }
       });
 
-      // Synchronize video players
-      for (let i = minIdx; i <= maxIdx; i++) {
-        const leftSlide = leftMap.current.get(i);
-        const rightSlide = rightMap.current.get(i);
-        if (!leftSlide || !rightSlide) continue;
+      // Synchronize active video player smoothly every 500ms max (avoids seek thrashing)
+      if (timestamp - lastSyncTime > 500) {
+        lastSyncTime = timestamp;
+        for (let i = minIdx; i <= maxIdx; i++) {
+          const leftSlide = leftMap.current.get(i);
+          const rightSlide = rightMap.current.get(i);
+          if (!leftSlide || !rightSlide) continue;
 
-        const leftVideo = leftSlide.querySelector("video");
-        const rightVideo = rightSlide.querySelector("video");
-        if (leftVideo && rightVideo) {
-          if (!leftVideo.paused && rightVideo.paused) {
-            rightVideo.play().catch(() => {});
-          } else if (leftVideo.paused && !rightVideo.paused) {
-            leftVideo.play().catch(() => {});
-          }
+          const leftVideo = leftSlide.querySelector("video");
+          const rightVideo = rightSlide.querySelector("video");
+          if (leftVideo && rightVideo) {
+            if (leftVideo.paused) leftVideo.play().catch(() => {});
+            if (rightVideo.paused) rightVideo.play().catch(() => {});
 
-          if (
-            leftVideo.readyState >= 2 &&
-            rightVideo.readyState >= 2 &&
-            Math.abs(leftVideo.currentTime - rightVideo.currentTime) > 0.35
-          ) {
-            rightVideo.currentTime = leftVideo.currentTime;
+            if (
+              leftVideo.readyState >= 3 &&
+              rightVideo.readyState >= 3 &&
+              !leftVideo.seeking &&
+              !rightVideo.seeking &&
+              Math.abs(leftVideo.currentTime - rightVideo.currentTime) > 0.8
+            ) {
+              rightVideo.currentTime = leftVideo.currentTime;
+            }
           }
         }
       }
