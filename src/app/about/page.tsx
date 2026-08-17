@@ -62,12 +62,13 @@ export default function AboutPage() {
             </clipPath>
           </defs>
         </svg>
-        <div className="relative w-full h-svh mx-auto [clip-path:url(#my-clip-path)] bg-[#282a2c]">
+        <div className="relative w-full h-svh mx-auto [clip-path:url(#my-clip-path)] bg-[#282a2c] pointer-events-none select-none [-webkit-touch-callout:none]">
           <Image
             src="/Images/About/About_Main_Img.webp"
             alt="A portrait of Zaheer Khan"
             fill
-            className="object-cover -translate-y-[5%] scale-105"
+            draggable={false}
+            className="object-cover -translate-y-[5%] scale-105 pointer-events-none select-none [-webkit-touch-callout:none]"
             priority
           />
         </div>

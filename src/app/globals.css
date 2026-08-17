@@ -105,3 +105,9 @@ body {
   background: var(--orange);
   color: var(--foreground);
 }
+
+img {
+  -webkit-touch-callout: none;
+  -webkit-user-drag: none;
+  user-select: none;
+}

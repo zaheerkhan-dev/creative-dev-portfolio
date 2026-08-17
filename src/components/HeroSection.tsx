@@ -9,13 +9,14 @@ export default function HeroSection() {
   return (
     <section className="w-full h-svh flex justify-center relative overflow-hidden">
       {/* Background Portrait Image */}
-      <div aria-hidden="true" className="absolute inset-0 z-0 overflow-hidden">
+      <div aria-hidden="true" className="absolute inset-0 z-0 overflow-hidden pointer-events-none select-none [-webkit-touch-callout:none]">
         <Image
           src="/Images/Home/Home_Image.webp"
           alt="Creative developer portrait"
           fill
           sizes="100vw"
-          className="object-cover md:scale-120 translate-y-8 md:translate-y-16"
+          draggable={false}
+          className="object-cover md:scale-120 translate-y-8 md:translate-y-16 pointer-events-none select-none [-webkit-touch-callout:none]"
           priority
         />
       </div>
