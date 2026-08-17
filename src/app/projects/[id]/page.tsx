@@ -171,17 +171,17 @@ export default function ProjectDetailPage() {
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
-          2. Meta Specs Grid
+          2. Quick Metadata Strip
          ───────────────────────────────────────────────────────────── */}
-      <section className="relative z-20 w-full max-w-6xl mx-auto px-6 py-12 md:py-20 border-b border-foreground/10">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12 text-center md:text-left">
+      <section className="relative z-20 w-full max-w-6xl mx-auto px-6 -mt-10 md:-mt-16">
+        <div className="w-full bg-background/90 backdrop-blur-xl border border-foreground/10 rounded-xl p-6 md:p-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 items-start shadow-2xl">
           {/* Client & Year */}
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-4">
             <div className="flex flex-col gap-1">
               <span className="font-barlow-condensed text-xs uppercase tracking-widest text-foreground/50 font-bold">
                 Client
               </span>
-              <span className="font-barlow-condensed text-base md:text-lg uppercase tracking-wider text-foreground font-semibold">
+              <span className="font-inter text-sm md:text-base text-foreground font-semibold">
                 {project.client}
               </span>
             </div>
@@ -189,7 +189,7 @@ export default function ProjectDetailPage() {
               <span className="font-barlow-condensed text-xs uppercase tracking-widest text-foreground/50 font-bold">
                 Year
               </span>
-              <span className="font-barlow-condensed text-base md:text-lg uppercase tracking-wider text-foreground font-semibold">
+              <span className="font-inter text-sm md:text-base text-foreground font-semibold">
                 {project.year}
               </span>
             </div>
@@ -200,7 +200,7 @@ export default function ProjectDetailPage() {
             <span className="font-barlow-condensed text-xs uppercase tracking-widest text-foreground/50 font-bold">
               Role & Scope
             </span>
-            <span className="font-barlow-condensed text-base md:text-lg uppercase tracking-wider text-foreground font-semibold leading-snug">
+            <span className="font-inter text-sm md:text-base text-foreground font-semibold leading-relaxed">
               {project.role}
             </span>
           </div>
@@ -214,7 +214,7 @@ export default function ProjectDetailPage() {
               {project.techStack.map((tech) => (
                 <span
                   key={tech}
-                  className="px-2.5 py-1 rounded bg-foreground/10 text-foreground/80 font-barlow-condensed text-xs md:text-sm tracking-wider uppercase font-semibold whitespace-nowrap"
+                  className="px-2.5 py-1 rounded bg-white/5 border border-white/10 text-white/90 font-inter text-xs font-medium tracking-wide whitespace-nowrap"
                 >
                   {tech}
                 </span>
@@ -252,15 +252,15 @@ export default function ProjectDetailPage() {
       {/* ─────────────────────────────────────────────────────────────
           3. Project Narrative Story Sections
          ───────────────────────────────────────────────────────────── */}
-      <section className="relative z-20 w-full max-w-5xl mx-auto px-6 py-16 md:py-28 flex flex-col gap-16 md:gap-24">
+      <section className="relative z-20 w-full max-w-4xl mx-auto px-6 py-16 md:py-28 flex flex-col gap-16 md:gap-24">
         {/* Overview & Vision */}
         <div className="w-full flex flex-col items-center text-center">
           <p className="font-barlow-condensed tracking-[.4rem] uppercase text-orange text-xs md:text-sm font-bold mb-4 md:mb-6">
             OVERVIEW & VISION
           </p>
-          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-[2.75rem] tracking-wide leading-snug sm:leading-tight md:leading-[3.2rem] font-bigger-display uppercase text-foreground max-w-4xl mx-auto">
+          <p className="text-lg sm:text-xl md:text-2xl font-inter text-foreground/90 font-normal leading-relaxed md:leading-[2.5rem] tracking-normal max-w-3xl mx-auto">
             {renderHighlightedText(project.description)}
-          </h2>
+          </p>
         </div>
 
         {/* My Role & Scope */}
@@ -268,9 +268,9 @@ export default function ProjectDetailPage() {
           <p className="font-barlow-condensed tracking-[.4rem] uppercase text-orange text-xs md:text-sm font-bold mb-4 md:mb-6">
             MY ROLE & SCOPE
           </p>
-          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-[2.75rem] tracking-wide leading-snug sm:leading-tight md:leading-[3.2rem] font-bigger-display uppercase text-foreground max-w-4xl mx-auto">
+          <p className="text-lg sm:text-xl md:text-2xl font-inter text-foreground/90 font-normal leading-relaxed md:leading-[2.5rem] tracking-normal max-w-3xl mx-auto">
             {renderHighlightedText(project.whatIDid)}
-          </h2>
+          </p>
         </div>
 
         {/* Tech & Implementation */}
@@ -278,9 +278,9 @@ export default function ProjectDetailPage() {
           <p className="font-barlow-condensed tracking-[.4rem] uppercase text-orange text-xs md:text-sm font-bold mb-4 md:mb-6">
             TECH & IMPLEMENTATION
           </p>
-          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-[2.75rem] tracking-wide leading-snug sm:leading-tight md:leading-[3.2rem] font-bigger-display uppercase text-foreground max-w-4xl mx-auto">
+          <p className="text-lg sm:text-xl md:text-2xl font-inter text-foreground/90 font-normal leading-relaxed md:leading-[2.5rem] tracking-normal max-w-3xl mx-auto">
             {renderHighlightedText(project.howIBuiltThis)}
-          </h2>
+          </p>
         </div>
 
         {/* Key Takeaways & Lessons */}
@@ -289,9 +289,9 @@ export default function ProjectDetailPage() {
             <p className="font-barlow-condensed tracking-[.4rem] uppercase text-orange text-xs md:text-sm font-bold mb-4 md:mb-6">
               KEY TAKEAWAYS & LESSONS
             </p>
-            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-[2.75rem] tracking-wide leading-snug sm:leading-tight md:leading-[3.2rem] font-bigger-display uppercase text-foreground max-w-4xl mx-auto">
+            <p className="text-lg sm:text-xl md:text-2xl font-inter text-foreground/90 font-normal leading-relaxed md:leading-[2.5rem] tracking-normal max-w-3xl mx-auto">
               {renderHighlightedText(project.keyTakeaway)}
-            </h2>
+            </p>
           </div>
         )}
       </section>
