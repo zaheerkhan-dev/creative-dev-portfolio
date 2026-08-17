@@ -182,7 +182,7 @@ export const projectsData: ProjectItem[] = [
   {
     id: "yappedin",
     title: "YappedIn",
-    img: "/Images/Projects/Project_3_Matchitt/Matchitt.mp4",
+    img: "/Images/Projects/Project_5_YappedIn/YappedIn.mp4",
     projectImages: [
       { url: "/Images/Projects/Project_3_Matchitt/Matchitt_1.png", pageName: "LinkedIn Chat Injection" },
       { url: "/Images/Projects/Project_3_Matchitt/Matchitt_2.png", pageName: "Voice Recording Studio" },
