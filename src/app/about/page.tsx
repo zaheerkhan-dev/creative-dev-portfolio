@@ -67,7 +67,7 @@ export default function AboutPage() {
             src="/Images/About/About_Main_Img.webp"
             alt="A portrait of Zaheer Khan"
             fill
-            className="object-cover"
+            className="object-cover -translate-y-[10%] scale-105"
             priority
           />
         </div>
