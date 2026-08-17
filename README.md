@@ -30,7 +30,7 @@ An award-winning caliber, high-performance creative developer portfolio built wi
 - **Synchronized Video Playback**: Parallel left and right video streams with wheel inertia (`deltaY / 1000`), touch swipe inertia, arrow key snapping, and custom floating `"VIEW"` cursor.
 
 ### 4. 🖼️ Dynamic Case Studies & Three.js Gallery (`/projects/[id]`)
-- **Case Study Deep Dives**: Rich project breakdown for 5 featured projects (`usalef`, `mycelius`, `orbit-matter`, `design-hive`, `matchitt`).
+- **Case Study Deep Dives**: Rich project breakdown for 5 featured projects (`staurga`, `linkryse`, `orbit-matter`, `design-hive`, `matchitt`).
 - **Parallax Hero Showcase**: Scrubbed video/image presentation with SplitText line reveals and metadata specs.
 - **WebGL Barrel Distortion Gallery**: Interactive infinite draggable Three.js canvas texture atlas with custom barrel distortion vertex and fragment GLSL shaders.
 - **Dual-Split Bottom Nav**: Seamless Next/Previous project switcher.
