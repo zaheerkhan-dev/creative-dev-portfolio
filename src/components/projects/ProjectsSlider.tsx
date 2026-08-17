@@ -7,7 +7,7 @@ import { usePageTransition } from "@/components/TransitionRouter";
 import { playClick } from "@/lib/soundEffects";
 
 export default function ProjectsSlider() {
-  const { navigate } = usePageTransition();
+  const { navigate, isTransitioning } = usePageTransition();
 
   const sectionRef = useRef<HTMLElement>(null);
   const cursorRef = useRef<HTMLDivElement>(null);
@@ -19,6 +19,19 @@ export default function ProjectsSlider() {
   const curPos = useRef(1);
   const targetPos = useRef(1);
   const touchStartY = useRef(0);
+  const isTouchActiveRef = useRef(false);
+  const isTransitioningRef = useRef(isTransitioning);
+
+  useEffect(() => {
+    isTransitioningRef.current = isTransitioning;
+    if (!isTransitioning) {
+      targetPos.current = Math.round(targetPos.current);
+      if (Math.abs(curPos.current - 1) < 0.05) {
+        curPos.current = 1;
+        targetPos.current = 1;
+      }
+    }
+  }, [isTransitioning]);
 
   const leftMap = useRef<Map<number, HTMLDivElement>>(new Map());
   const rightMap = useRef<Map<number, HTMLDivElement>>(new Map());
@@ -150,7 +163,12 @@ export default function ProjectsSlider() {
     const rightEl = rightMap.current;
 
     const render = () => {
-      curPos.current += (targetPos.current - curPos.current) * 0.07;
+      const diff = targetPos.current - curPos.current;
+      if (Math.abs(diff) < 0.0008 && !isTouchActiveRef.current) {
+        curPos.current = targetPos.current;
+      } else {
+        curPos.current += diff * 0.07;
+      }
       const pos = curPos.current;
       const minIdx = Math.floor(pos) - 3;
       const maxIdx = Math.floor(pos) + 3 + 1;
@@ -273,6 +291,7 @@ export default function ProjectsSlider() {
     let snapTimeout: NodeJS.Timeout;
 
     const handleWheel = (e: WheelEvent) => {
+      if (isTransitioningRef.current) return;
       targetPos.current += e.deltaY / 1000;
       clearTimeout(snapTimeout);
       snapTimeout = setTimeout(() => {
@@ -288,24 +307,39 @@ export default function ProjectsSlider() {
     };
 
     const handleTouchStart = (e: TouchEvent) => {
+      if (isTransitioningRef.current) return;
       if (e.touches.length > 0) {
+        isTouchActiveRef.current = true;
         touchStartY.current = e.touches[0].clientY;
       }
     };
 
     const handleTouchMove = (e: TouchEvent) => {
+      if (isTransitioningRef.current || !isTouchActiveRef.current) return;
       if (e.touches.length > 0) {
         const clientY = e.touches[0].clientY;
-        targetPos.current += ((touchStartY.current - clientY) * 8) / 1000;
+        const rawDelta = touchStartY.current - clientY;
+        if (touchStartY.current > 0 && Math.abs(rawDelta) < 200) {
+          targetPos.current += (rawDelta * 8) / 1000;
+        }
         touchStartY.current = clientY;
       }
     };
 
     const handleTouchEnd = () => {
+      isTouchActiveRef.current = false;
+      touchStartY.current = 0;
+      targetPos.current = Math.round(targetPos.current);
+    };
+
+    const handleTouchCancel = () => {
+      isTouchActiveRef.current = false;
+      touchStartY.current = 0;
       targetPos.current = Math.round(targetPos.current);
     };
 
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (isTransitioningRef.current) return;
       if (e.key === "ArrowDown" || e.key === "ArrowRight") {
         targetPos.current = Math.floor(targetPos.current) + 1;
       } else if (e.key === "ArrowUp" || e.key === "ArrowLeft") {
@@ -317,6 +351,7 @@ export default function ProjectsSlider() {
     window.addEventListener("touchstart", handleTouchStart, { passive: true });
     window.addEventListener("touchmove", handleTouchMove, { passive: true });
     window.addEventListener("touchend", handleTouchEnd, { passive: true });
+    window.addEventListener("touchcancel", handleTouchCancel, { passive: true });
     window.addEventListener("keydown", handleKeyDown);
 
     return () => {
@@ -325,6 +360,7 @@ export default function ProjectsSlider() {
       window.removeEventListener("touchstart", handleTouchStart);
       window.removeEventListener("touchmove", handleTouchMove);
       window.removeEventListener("touchend", handleTouchEnd);
+      window.removeEventListener("touchcancel", handleTouchCancel);
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, []);
