@@ -3,6 +3,11 @@ export interface ProjectImage {
   pageName: string;
 }
 
+export interface ProjectFeature {
+  title: string;
+  desc: string;
+}
+
 export interface ProjectItem {
   id: string;
   title: string;
@@ -13,6 +18,7 @@ export interface ProjectItem {
   year: string;
   role: string;
   techStack: string[];
+  features?: ProjectFeature[];
   description: string;
   whatIDid: string;
   howIBuiltThis: string;
@@ -47,6 +53,20 @@ export const projectsData: ProjectItem[] = [
       "Tailwind CSS",
       "Framer Motion",
       "Cloudflare Serverless",
+    ],
+    features: [
+      {
+        title: "Custom Admin Panel",
+        desc: "Centralized CMS dashboard enabling the team to manage client testimonials, publish editorial blogs, and review contact submissions without touching code.",
+      },
+      {
+        title: "Automated Lead Magnet Pipeline",
+        desc: "High-converting opt-in capture funnels that instantly deliver executive growth resources and sync founder leads directly into the CRM.",
+      },
+      {
+        title: "Hiring Application Portal",
+        desc: "End-to-end recruitment flow that screens, filters, and qualifies inbound ghostwriting talent as the agency scales its client roster.",
+      },
     ],
     description:
       "A full-suite B2B agency platform engineered for Staurga, a premier LinkedIn ghostwriting and executive personal branding firm. Built with an authoritative marketing frontend, dedicated Admin Panel for content management, SEO-optimized MDX blog system, automated lead magnet funnels, and a streamlined hiring application portal.",
