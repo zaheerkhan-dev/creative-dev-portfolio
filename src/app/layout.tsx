@@ -7,7 +7,7 @@ import TransitionRouter from "@/components/TransitionRouter";
 import SmoothScroll from "@/components/SmoothScroll";
 
 export const metadata: Metadata = {
-  title: "Zaheer Khan — Creative Developer",
+  title: "Zaheer Khan | Creative Developer",
   description:
     "Creative web developer crafting beautiful and engaging digital experiences. Specializing in React, Next.js, Three.js, GSAP, and modern web technologies.",
   authors: [{ name: "Zaheer Khan" }],

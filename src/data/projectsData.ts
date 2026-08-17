@@ -55,7 +55,7 @@ export const projectsData: ProjectItem[] = [
     howIBuiltThis:
       "Built with Next.js App Router, React, TypeScript, and Tailwind CSS. The platform features buttery smooth Framer Motion micro-interactions, Lenis smooth scrolling, an MDX content layer for high-ranking authority articles, and custom form automation, all deployed on a zero-maintenance Cloudflare Serverless architecture ($0/mo hosting cost) with structured JSON-LD schema for peak search visibility.",
     keyTakeaway:
-      "A high-performing agency platform isn't just a portfolio — it's a scalable business operating system. By unifying client acquisition, editorial authority, lead magnet automation, and talent recruiting into one seamless stack, Staurga is positioned to scale rapidly with zero overhead.",
+      "A high-performing agency platform isn't just a portfolio, it's a scalable business operating system. By unifying client acquisition, editorial authority, lead magnet automation, and talent recruiting into one seamless stack, Staurga is positioned to scale rapidly with zero overhead.",
     tagline: [
       "A full-suite executive branding platform engineered for Staurga.",
       "Unifying client acquisition, editorial authority, and automated hiring pipelines.",
@@ -167,16 +167,16 @@ export const projectsData: ProjectItem[] = [
       "Drizzle ORM",
     ],
     description:
-      "I kept rebuilding the same things — **auth flows**, **payment integrations**, **UI component libraries** — on every new project. So I started extracting all of it into one system. Orunk is a Turborepo monorepo with production starters, a reusable component registry, and a license-gated CLI. Currently in heavy development and already powering my own client work.",
+      "I kept rebuilding the same things like **auth flows**, **payment integrations**, and **UI component libraries** on every new project. So I started extracting all of it into one system. Orunk is a Turborepo monorepo with production starters, a reusable component registry, and a license-gated CLI. Currently in heavy development and already powering my own client work.",
     whatIDid:
       "I built the full ecosystem: a Hono-based license server on Cloudflare Workers with Drizzle ORM, machine-hashed activation keys, Stripe checkout with webhook fulfillment, Google OAuth with sliding-window JWT sessions, a browsable UI component registry, and the interactive PixelCanvas engine on the homepage.",
     howIBuiltThis:
       "Turborepo monorepo with two apps (Next.js 16 frontend, Hono Workers backend) and shared packages. The backend handles auth, licensing, checkout, template delivery, and a component registry API. The frontend uses Tailwind CSS v4, Framer Motion, and a custom 2D Canvas pixel physics engine with cursor repulsion and traveling shimmer waves.",
     keyTakeaway:
-      "Every repeated pattern from client work gets extracted into Orunk. Auth, billing, UI — write it once, use it everywhere. The hardest part is not the code, it is designing the abstraction boundaries so each starter stays flexible enough for real projects.",
+      "Every repeated pattern from client work gets extracted into Orunk. Auth, billing, UI: write it once, use it everywhere. The hardest part is not the code, it is designing the abstraction boundaries so each starter stays flexible enough for real projects.",
     tagline: [
       "A SaaS starter ecosystem born from my own repeated frustrations.",
-      "In heavy development — already powering real client projects.",
+      "In heavy development and already powering real client projects.",
     ],
   },
   {
@@ -203,15 +203,15 @@ export const projectsData: ProjectItem[] = [
       "Zustand",
     ],
     description:
-      "LinkedIn has had voice notes on mobile for years but never built it for desktop. I wanted to learn how browser extensions work, but not by building something basic — so I reverse-engineered LinkedIn's mobile endpoints and built a Chrome Extension that injects a **native voice recording studio** directly into LinkedIn's chat UI, including **Shadow DOM chat drawers**.",
+      "LinkedIn has had voice notes on mobile for years but never built it for desktop. I wanted to learn how browser extensions work without building something basic, so I reverse-engineered LinkedIn's mobile endpoints and built a Chrome Extension that injects a **native voice recording studio** directly into LinkedIn's chat UI, including **Shadow DOM chat drawers**.",
     whatIDid:
       "I engineered the complete extension architecture from scratch: a content script injection engine that pierces LinkedIn's Shadow DOM overlays, an in-browser M4A/AAC audio encoding pipeline using mp4box.js (because LinkedIn's player rejects WebM), reverse-engineered iOS spoofing headers to authenticate against LinkedIn's mobile APIs, and an MV3-compliant offscreen document architecture for continuous microphone capture.",
     howIBuiltThis:
-      "Built with the WXT framework on Chrome Manifest V3. The audio pipeline captures PCM via Web Audio API, encodes to AAC, muxes into a valid M4A container client-side using mp4box.js, then uploads directly to LinkedIn's CDN using the user's existing session cookies. Zero backend server — the extension is 100% client-side by design, so user credentials never leave their browser.",
+      "Built with the WXT framework on Chrome Manifest V3. The audio pipeline captures PCM via Web Audio API, encodes to AAC, muxes into a valid M4A container client-side using mp4box.js, then uploads directly to LinkedIn's CDN using the user's existing session cookies. Zero backend server. The extension is 100% client-side by design, so user credentials never leave their browser.",
     keyTakeaway:
-      "My first browser extension. I picked this project specifically because I wanted to learn extension development by solving a real problem I had. The hardest part was the audio encoding — browsers record WebM natively, but LinkedIn's voice player only accepts M4A. Building a client-side muxer to bridge that gap taught me more about audio containers than any tutorial could.",
+      "My first browser extension. I picked this project specifically because I wanted to learn extension development by solving a real problem I had. The hardest part was the audio encoding because browsers record WebM natively, but LinkedIn's voice player only accepts M4A. Building a client-side muxer to bridge that gap taught me more about audio containers than any tutorial could.",
     tagline: [
-      "Voice notes for LinkedIn Desktop — because they never built it.",
+      "Voice notes for LinkedIn Desktop, because they never built it.",
       "My first extension, built to solve a real problem I had.",
     ],
   },
