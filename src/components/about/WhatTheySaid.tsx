@@ -57,9 +57,9 @@ export const defaultTestimonials: Testimonial[] = [
     backgroundQuote:
       "I am literally his friend and had zero idea that he put my face on his portfolio.",
     name: "Abeeha Parveen",
-    role: "Website Strategist & Developer",
-    company: "LinkedIn",
-    websiteUrl: "https://www.linkedin.com/in/abeeha-parveen-website-strategist/",
+    role: "Brand Strategist & Creative Partner",
+    company: "Studio Parveen",
+    websiteUrl: "https://www.linkedin.com/in/abeeha-parveen/",
     avatar: "/Images/About/Abeeha_Parveen_Client_Img.png",
   },
 ];
