@@ -15,6 +15,21 @@ if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
+function renderHighlightedText(text: string) {
+  if (!text) return null;
+  const parts = text.split(/(\*\*.*?\*\*)/g);
+  return parts.map((part, i) => {
+    if (part.startsWith("**") && part.endsWith("**")) {
+      return (
+        <span key={i} className="text-orange">
+          {part.slice(2, -2)}
+        </span>
+      );
+    }
+    return part;
+  });
+}
+
 export default function ProjectDetailPage() {
   const params = useParams();
   const id = params.id as string;
@@ -235,35 +250,6 @@ export default function ProjectDetailPage() {
       </section>
 
       {/* ─────────────────────────────────────────────────────────────
-          2.5 Key Capabilities & Systems (Optional Highlighted Architecture)
-         ───────────────────────────────────────────────────────────── */}
-      {project.features && project.features.length > 0 && (
-        <section className="relative z-20 w-full max-w-6xl mx-auto px-6 pt-12 md:pt-16 pb-4">
-          <p className="font-barlow-condensed tracking-[.4rem] uppercase text-orange text-xs md:text-sm font-bold mb-8 text-center md:text-left">
-            KEY CAPABILITIES & ARCHITECTURE
-          </p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {project.features.map((feat, idx) => (
-              <div
-                key={idx}
-                className="p-6 md:p-8 rounded-xl bg-white/[0.02] border border-white/10 hover:border-orange/40 transition-all duration-300 flex flex-col justify-start group"
-              >
-                <div className="flex items-center gap-3 mb-3.5">
-                  <span className="w-2.5 h-2.5 rounded-full bg-orange group-hover:scale-125 transition-transform duration-300" />
-                  <h3 className="font-barlow-condensed text-xl md:text-2xl uppercase tracking-wider font-bold text-foreground">
-                    {feat.title}
-                  </h3>
-                </div>
-                <p className="font-barlow-condensed text-base md:text-lg text-foreground/70 tracking-wide leading-relaxed">
-                  {feat.desc}
-                </p>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* ─────────────────────────────────────────────────────────────
           3. Project Narrative Story Sections
          ───────────────────────────────────────────────────────────── */}
       <section className="relative z-20 w-full max-w-5xl mx-auto px-6 py-16 md:py-28 flex flex-col gap-16 md:gap-24">
@@ -273,7 +259,7 @@ export default function ProjectDetailPage() {
             OVERVIEW & VISION
           </p>
           <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-[2.75rem] tracking-wide leading-snug sm:leading-tight md:leading-[3.2rem] font-bigger-display uppercase text-foreground max-w-4xl mx-auto">
-            {project.description}
+            {renderHighlightedText(project.description)}
           </h2>
         </div>
 
@@ -283,7 +269,7 @@ export default function ProjectDetailPage() {
             MY ROLE & SCOPE
           </p>
           <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-[2.75rem] tracking-wide leading-snug sm:leading-tight md:leading-[3.2rem] font-bigger-display uppercase text-foreground max-w-4xl mx-auto">
-            {project.whatIDid}
+            {renderHighlightedText(project.whatIDid)}
           </h2>
         </div>
 
@@ -293,7 +279,7 @@ export default function ProjectDetailPage() {
             TECH & IMPLEMENTATION
           </p>
           <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-[2.75rem] tracking-wide leading-snug sm:leading-tight md:leading-[3.2rem] font-bigger-display uppercase text-foreground max-w-4xl mx-auto">
-            {project.howIBuiltThis}
+            {renderHighlightedText(project.howIBuiltThis)}
           </h2>
         </div>
 
@@ -304,7 +290,7 @@ export default function ProjectDetailPage() {
               KEY TAKEAWAYS & LESSONS
             </p>
             <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-[2.75rem] tracking-wide leading-snug sm:leading-tight md:leading-[3.2rem] font-bigger-display uppercase text-foreground max-w-4xl mx-auto">
-              {project.keyTakeaway}
+              {renderHighlightedText(project.keyTakeaway)}
             </h2>
           </div>
         )}

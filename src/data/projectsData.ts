@@ -3,11 +3,6 @@ export interface ProjectImage {
   pageName: string;
 }
 
-export interface ProjectFeature {
-  title: string;
-  desc: string;
-}
-
 export interface ProjectItem {
   id: string;
   title: string;
@@ -18,7 +13,6 @@ export interface ProjectItem {
   year: string;
   role: string;
   techStack: string[];
-  features?: ProjectFeature[];
   description: string;
   whatIDid: string;
   howIBuiltThis: string;
@@ -54,24 +48,10 @@ export const projectsData: ProjectItem[] = [
       "Framer Motion",
       "Cloudflare Serverless",
     ],
-    features: [
-      {
-        title: "Custom Admin Panel",
-        desc: "Centralized CMS dashboard enabling the team to manage client testimonials, publish editorial blogs, and review contact submissions without touching code.",
-      },
-      {
-        title: "Automated Lead Magnet Pipeline",
-        desc: "High-converting opt-in capture funnels that instantly deliver executive growth resources and sync founder leads directly into the CRM.",
-      },
-      {
-        title: "Hiring Application Portal",
-        desc: "End-to-end recruitment flow that screens, filters, and qualifies inbound ghostwriting talent as the agency scales its client roster.",
-      },
-    ],
     description:
-      "A full-suite B2B agency platform engineered for Staurga, a premier LinkedIn ghostwriting and executive personal branding firm. Built with an authoritative marketing frontend, dedicated Admin Panel for content management, SEO-optimized MDX blog system, automated lead magnet funnels, and a streamlined hiring application portal.",
+      "A full-suite B2B agency platform engineered for Staurga, a premier LinkedIn ghostwriting firm. Built with an authoritative marketing frontend, a dedicated **Admin Panel** for content management, automated **Lead Magnet** pipelines, and a streamlined **Hiring Application Portal**.",
     whatIDid:
-      "I designed and engineered the complete ecosystem from the ground up: a conversion-optimized marketing frontend, a dedicated Admin Panel for effortless content management, an SEO-optimized MDX blog system, an automated lead magnet capture pipeline, and an interactive hiring application flow for inbound ghostwriting talent.",
+      "I designed and engineered the complete ecosystem from the ground up: an executive marketing frontend, a custom **Admin Panel** for zero-code content updates, an SEO-optimized MDX blog system, high-converting **Lead Magnet** automations, and an interactive **Hiring Application Portal** for scaling the writing team.",
     howIBuiltThis:
       "Built with Next.js App Router, React, TypeScript, and Tailwind CSS. The platform features buttery smooth Framer Motion micro-interactions, Lenis smooth scrolling, an MDX content layer for high-ranking authority articles, and custom form automation, all deployed on a zero-maintenance Cloudflare Serverless architecture ($0/mo hosting cost) with structured JSON-LD schema for peak search visibility.",
     keyTakeaway:
