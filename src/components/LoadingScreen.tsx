@@ -153,9 +153,9 @@ export default function LoadingScreen({ children }: { children: React.ReactNode 
       {/* Preloader Panel */}
       <div
         ref={loaderRef}
-        className="w-[200%] -translate-x-1/2 h-full fixed top-0 left-0 bg-foreground font-bigger-display z-[99]"
+        className="w-full h-full fixed inset-0 bg-foreground font-bigger-display z-[99] overflow-hidden"
       >
-        <div className="absolute bottom-6 right-[calc(50%+1rem)] sm:bottom-8 sm:right-[calc(50%+2rem)] flex items-end gap-2 sm:gap-3">
+        <div className="absolute bottom-6 right-6 sm:bottom-8 sm:right-8 flex items-end gap-2 sm:gap-3 max-w-[calc(100vw-3rem)]">
           <p className="w-max text-background text-2xl sm:text-3xl md:text-5xl uppercase leading-none pb-1 md:pb-2">
             Loading
           </p>
