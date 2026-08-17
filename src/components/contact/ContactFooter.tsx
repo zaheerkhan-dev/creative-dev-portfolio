@@ -54,7 +54,7 @@ export default function ContactFooter() {
 
   useGSAP(
     () => {
-      const links = gsap.utils.toArray<HTMLElement>(".contact-social-link");
+      const links = gsap.utils.toArray<HTMLElement>(".contact-social-link", footerRef.current);
       links.forEach((link) => {
         const nameEl = link.querySelector<HTMLElement>(".contact-social-name");
         if (!nameEl) return;
@@ -62,7 +62,14 @@ export default function ContactFooter() {
         const split = new SplitText(nameEl, { type: "chars" });
         gsap.set(split.chars, { yPercent: 120, opacity: 0 });
 
-        const onEnter = () => {
+        let isActive = false;
+        let isTouching = false;
+        let touchTimeout: NodeJS.Timeout | null = null;
+
+        const handleEnter = () => {
+          if (isActive) return;
+          isActive = true;
+          playHover();
           link.setAttribute("data-active", "true");
           gsap.to(split.chars, {
             yPercent: 0,
@@ -74,7 +81,9 @@ export default function ContactFooter() {
           });
         };
 
-        const onLeave = () => {
+        const handleLeave = () => {
+          if (!isActive) return;
+          isActive = false;
           link.removeAttribute("data-active");
           gsap.to(split.chars, {
             yPercent: 120,
@@ -86,14 +95,33 @@ export default function ContactFooter() {
           });
         };
 
-        link.addEventListener("mouseenter", onEnter);
-        link.addEventListener("mouseleave", onLeave);
-
-        return () => {
-          link.removeEventListener("mouseenter", onEnter);
-          link.removeEventListener("mouseleave", onLeave);
-          split.revert();
+        const onMouseEnter = () => {
+          if (!isTouching) handleEnter();
         };
+
+        const onMouseLeave = () => {
+          if (!isTouching) handleLeave();
+        };
+
+        const onTouchStart = () => {
+          isTouching = true;
+          if (touchTimeout) clearTimeout(touchTimeout);
+          handleEnter();
+        };
+
+        const onTouchEnd = () => {
+          handleLeave();
+          if (touchTimeout) clearTimeout(touchTimeout);
+          touchTimeout = setTimeout(() => {
+            isTouching = false;
+          }, 500);
+        };
+
+        link.addEventListener("mouseenter", onMouseEnter);
+        link.addEventListener("mouseleave", onMouseLeave);
+        link.addEventListener("touchstart", onTouchStart, { passive: true });
+        link.addEventListener("touchend", onTouchEnd, { passive: true });
+        link.addEventListener("touchcancel", onTouchEnd, { passive: true });
       });
     },
     { scope: footerRef }
@@ -129,7 +157,6 @@ export default function ContactFooter() {
               rel="noopener noreferrer"
               className="group contact-social-link relative select-none [-webkit-touch-callout:none] cursor-pointer"
               aria-label={item.name}
-              onMouseEnter={() => playHover()}
             >
               <div className="w-12 h-12 md:w-14 md:h-14 z-20 overflow-hidden relative bg-[#2a2929] rounded-full p-3.5 md:p-4 hover:scale-90 group-data-[active=true]:scale-90 transition-transform duration-300 flex items-center justify-center">
                 {/* Circular Orange Expand */}
@@ -144,12 +171,12 @@ export default function ContactFooter() {
                 </svg>
               </div>
 
-              {/* Tooltip on Top with Inter Font and Guarded Opacity */}
+              {/* Tooltip on Top with Barlow Condensed */}
               <div
-                className="contact-social-name absolute overflow-hidden left-1/2 -top-2.5 -translate-x-1/2 -translate-y-full whitespace-nowrap uppercase font-semibold tracking-wider text-foreground pointer-events-none font-barlow-condensed text-[11px] opacity-0 group-hover:opacity-100 group-data-[active=true]:opacity-100 transition-opacity duration-200"
+                className="contact-social-name absolute overflow-hidden left-1/2 -top-2 -translate-x-1/2 -translate-y-full whitespace-nowrap uppercase font-semibold tracking-wider text-foreground pointer-events-none font-barlow-condensed text-xs opacity-0 group-hover:opacity-100 group-data-[active=true]:opacity-100 transition-opacity duration-200"
                 aria-label={item.name}
               >
-                <span>{item.name}</span>
+                {item.name}
               </div>
             </a>
           ))}
