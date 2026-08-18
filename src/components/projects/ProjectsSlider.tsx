@@ -62,9 +62,8 @@ export default function ProjectsSlider() {
 
       const isVideo =
         mediaSrc.endsWith(".mp4") || mediaSrc.endsWith(".webm");
-      const posterSrc = p.projectImages[0]?.url || "";
       const mediaHtml = isVideo
-        ? `<video src="${mediaSrc}" autoplay loop muted playsinline preload="auto" poster="${posterSrc}" class="w-full h-full object-cover block will-change-transform filter grayscale contrast-110 brightness-95"></video>`
+        ? `<video src="${mediaSrc}" autoplay loop muted playsinline preload="auto" class="w-full h-full object-cover block will-change-transform filter grayscale contrast-110 brightness-95"></video>`
         : `<img src="${mediaSrc}" alt="${p.title}" class="w-full h-full object-cover block will-change-transform filter grayscale contrast-110 brightness-95" />`;
 
       slide.innerHTML = `
