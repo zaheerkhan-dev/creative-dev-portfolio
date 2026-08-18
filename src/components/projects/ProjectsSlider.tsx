@@ -63,7 +63,7 @@ export default function ProjectsSlider() {
       const isVideo =
         mediaSrc.endsWith(".mp4") || mediaSrc.endsWith(".webm");
       const mediaHtml = isVideo
-        ? `<video src="${mediaSrc}" autoplay loop muted playsinline preload="auto" class="w-full h-full object-cover block will-change-transform filter grayscale contrast-110 brightness-95"></video>`
+        ? `<video src="${mediaSrc}" loop muted playsinline preload="none" class="w-full h-full object-cover block will-change-transform filter grayscale contrast-110 brightness-95"></video>`
         : `<img src="${mediaSrc}" alt="${p.title}" class="w-full h-full object-cover block will-change-transform filter grayscale contrast-110 brightness-95" />`;
 
       slide.innerHTML = `
@@ -122,26 +122,6 @@ export default function ProjectsSlider() {
             </div>
         </div>
       `;
-
-      if (isVideo) {
-        const video = slide.querySelector("video");
-        if (video) {
-          const syncOnReady = () => {
-            const otherSideMap = side === "left" ? rightMap.current : leftMap.current;
-            const otherSlide = otherSideMap.get(idx);
-            const otherVideo = otherSlide?.querySelector("video");
-            if (otherVideo && otherVideo.readyState >= 2) {
-              video.currentTime = otherVideo.currentTime;
-            }
-            video.play().catch(() => {});
-          };
-          if (video.readyState >= 2) {
-            syncOnReady();
-          } else {
-            video.addEventListener("canplay", syncOnReady, { once: true });
-          }
-        }
-      }
 
       return slide;
     },
@@ -239,10 +219,16 @@ export default function ProjectsSlider() {
             // Keep slide in DOM but visually hidden (video decoder stays alive)
             slide.style.visibility = "hidden";
             slide.style.clipPath = "inset(100%)";
-            // Pause far-away videos to save decoder slots
-            if (l <= -0.5 || l >= 2.5) {
-              const vid = slide.querySelector("video");
-              if (vid && !vid.paused) vid.pause();
+            const vid = slide.querySelector("video") as HTMLVideoElement | null;
+            if (vid) {
+              if (l <= -0.5 || l >= 2.5) {
+                // Far away: stop downloading and pause
+                if (!vid.paused) vid.pause();
+                if (vid.preload !== "none") vid.preload = "none";
+              } else {
+                // Pre-roll zone: start buffering but don't play yet
+                if (vid.preload !== "auto") vid.preload = "auto";
+              }
             }
             continue;
           }
@@ -254,9 +240,11 @@ export default function ProjectsSlider() {
           if (media) {
             const drift = (1 - d) * 25 * driftDir;
             media.style.transform = `translateY(${drift}%) scale(1.25)`;
-            // Ensure video stays playing when slide is visible
-            if (media.tagName === "VIDEO" && (media as HTMLVideoElement).paused) {
-              (media as HTMLVideoElement).play().catch(() => {});
+            // Ensure video is buffering and playing when slide is visible
+            if (media.tagName === "VIDEO") {
+              const video = media as HTMLVideoElement;
+              if (video.preload !== "auto") video.preload = "auto";
+              if (video.paused) video.play().catch(() => {});
             }
           }
 
