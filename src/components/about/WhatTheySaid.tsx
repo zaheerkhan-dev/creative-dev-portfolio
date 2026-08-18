@@ -120,14 +120,37 @@ export default function WhatTheySaid({
   // SplitText Letter Animation on review switch
   useGSAP(
     () => {
+      // Kill any stale tweens from rapid clicks
+      if (prevContentRef.current) {
+        gsap.killTweensOf(prevContentRef.current.querySelectorAll(".char-span"));
+        gsap.killTweensOf(prevContentRef.current.querySelectorAll(".meta-line"));
+      }
+      if (currentContentRef.current) {
+        gsap.killTweensOf(currentContentRef.current.querySelectorAll(".char-span"));
+        gsap.killTweensOf(currentContentRef.current.querySelectorAll(".meta-line"));
+      }
+
+      const yOut = direction === "next" ? -110 : 110;
+      const yIn = direction === "next" ? 110 : -110;
+
       if (prevContentRef.current && prevIndex !== null) {
         const chars = prevContentRef.current.querySelectorAll(".char-span");
         gsap.to(chars, {
-          yPercent: direction === "next" ? -110 : 110,
+          yPercent: yOut,
           duration: 0.45,
           ease: "power2.in",
           stagger: (i, target: Element) =>
             0.5 * parseFloat(target.getAttribute("data-delay") || "0"),
+        });
+
+        // Simple fade-out for metadata lines
+        const prevMeta = prevContentRef.current.querySelectorAll(".meta-line");
+        gsap.to(prevMeta, {
+          yPercent: yOut * 0.3,
+          opacity: 0,
+          duration: 0.35,
+          ease: "power2.in",
+          stagger: 0.04,
         });
       }
 
@@ -135,9 +158,7 @@ export default function WhatTheySaid({
         const chars = currentContentRef.current.querySelectorAll(".char-span");
         gsap.fromTo(
           chars,
-          {
-            yPercent: direction === "next" ? 110 : -110,
-          },
+          { yPercent: yIn },
           {
             yPercent: 0,
             duration: 0.65,
@@ -147,6 +168,21 @@ export default function WhatTheySaid({
             onComplete: () => {
               setPrevIndex(null);
             },
+          }
+        );
+
+        // Simple fade-in for metadata lines
+        const curMeta = currentContentRef.current.querySelectorAll(".meta-line");
+        gsap.fromTo(
+          curMeta,
+          { yPercent: yIn * 0.3, opacity: 0 },
+          {
+            yPercent: 0,
+            opacity: 1,
+            duration: 0.5,
+            ease: "power3.out",
+            stagger: 0.06,
+            delay: 0.15,
           }
         );
       }
@@ -183,6 +219,12 @@ export default function WhatTheySaid({
       </div>
     );
   };
+
+  const renderMetaLine = (text: string, className: string) => (
+    <div className={`meta-line overflow-hidden ${className}`}>
+      {text}
+    </div>
+  );
 
   const renderReviewContent = (item: Testimonial, isPrevious = false) => {
     const hasShort = !!item.shortQuote;
@@ -235,12 +277,11 @@ export default function WhatTheySaid({
                 onClick={() => {
                   if (!isPrevious) setModalItem(item);
                 }}
-                className="inline-flex items-center gap-2 text-xs md:text-sm font-barlow-condensed tracking-[.2rem] uppercase text-orange font-bold cursor-pointer hover:opacity-80 transition-all z-30 relative"
+                className="inline-flex items-center gap-2 cursor-pointer hover:opacity-80 transition-all z-30 relative"
               >
-                {renderAnimatedLetters(
+                {renderMetaLine(
                   "[ Click to Read Full Review ]",
-                  "text-xs md:text-sm text-orange font-barlow-condensed tracking-[.2rem] uppercase font-bold",
-                  0.2
+                  "text-xs md:text-sm text-orange font-barlow-condensed tracking-[.2rem] uppercase font-bold"
                 )}
               </div>
             ) : (
@@ -251,15 +292,13 @@ export default function WhatTheySaid({
 
         {/* Client Meta (Name, Role, Company) */}
         <div className="flex flex-col gap-0.5 text-left min-h-[70px]">
-          {renderAnimatedLetters(
+          {renderMetaLine(
             item.name,
-            "text-lg md:text-xl font-bold text-foreground font-barlow-condensed tracking-wider uppercase",
-            0.05
+            "text-lg md:text-xl font-bold text-foreground font-barlow-condensed tracking-wider uppercase"
           )}
-          {renderAnimatedLetters(
+          {renderMetaLine(
             item.role,
-            "text-xs md:text-sm text-foreground/60 font-barlow-condensed tracking-widest uppercase",
-            0.1
+            "text-xs md:text-sm text-foreground/60 font-barlow-condensed tracking-widest uppercase"
           )}
           {item.websiteUrl ? (
             <a
@@ -269,17 +308,15 @@ export default function WhatTheySaid({
               onClick={(e) => e.stopPropagation()}
               className="inline-block hover:text-orange transition-colors cursor-pointer group/link"
             >
-              {renderAnimatedLetters(
+              {renderMetaLine(
                 item.company,
-                "text-xs md:text-sm text-foreground/40 font-barlow-condensed tracking-widest uppercase group-hover/link:text-orange transition-colors",
-                0.15
+                "text-xs md:text-sm text-foreground/40 font-barlow-condensed tracking-widest uppercase group-hover/link:text-orange transition-colors"
               )}
             </a>
           ) : (
-            renderAnimatedLetters(
+            renderMetaLine(
               item.company,
-              "text-xs md:text-sm text-foreground/40 font-barlow-condensed tracking-widest uppercase",
-              0.15
+              "text-xs md:text-sm text-foreground/40 font-barlow-condensed tracking-widest uppercase"
             )
           )}
         </div>
