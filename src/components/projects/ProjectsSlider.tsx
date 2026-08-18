@@ -62,8 +62,9 @@ export default function ProjectsSlider() {
 
       const isVideo =
         mediaSrc.endsWith(".mp4") || mediaSrc.endsWith(".webm");
+      const posterSrc = p.projectImages[0]?.url || "";
       const mediaHtml = isVideo
-        ? `<video src="${mediaSrc}" autoplay loop muted playsinline class="w-full h-full object-cover block will-change-transform filter grayscale contrast-110 brightness-95"></video>`
+        ? `<video src="${mediaSrc}" autoplay loop muted playsinline preload="auto" poster="${posterSrc}" class="w-full h-full object-cover block will-change-transform filter grayscale contrast-110 brightness-95"></video>`
         : `<img src="${mediaSrc}" alt="${p.title}" class="w-full h-full object-cover block will-change-transform filter grayscale contrast-110 brightness-95" />`;
 
       slide.innerHTML = `
@@ -124,16 +125,23 @@ export default function ProjectsSlider() {
       `;
 
       if (isVideo) {
-        setTimeout(() => {
-          const video = slide.querySelector("video");
-          const otherSideMap = side === "left" ? rightMap.current : leftMap.current;
-          const otherSlide = otherSideMap.get(idx);
-          const otherVideo = otherSlide?.querySelector("video");
-          if (video && otherVideo && otherVideo.readyState >= 2) {
-            video.currentTime = otherVideo.currentTime;
+        const video = slide.querySelector("video");
+        if (video) {
+          const syncOnReady = () => {
+            const otherSideMap = side === "left" ? rightMap.current : leftMap.current;
+            const otherSlide = otherSideMap.get(idx);
+            const otherVideo = otherSlide?.querySelector("video");
+            if (otherVideo && otherVideo.readyState >= 2) {
+              video.currentTime = otherVideo.currentTime;
+            }
             video.play().catch(() => {});
+          };
+          if (video.readyState >= 2) {
+            syncOnReady();
+          } else {
+            video.addEventListener("canplay", syncOnReady, { once: true });
           }
-        }, 50);
+        }
       }
 
       return slide;
@@ -214,6 +222,13 @@ export default function ProjectsSlider() {
         // Update / Remove out of range
         for (const [i, slide] of visibleMap.entries()) {
           if (i < minIdx || i > maxIdx) {
+            // Release video decoder before removing slide
+            const vid = slide.querySelector("video");
+            if (vid) {
+              vid.pause();
+              vid.removeAttribute("src");
+              vid.load();
+            }
             slide.remove();
             visibleMap.delete(i);
             continue;
@@ -222,17 +237,28 @@ export default function ProjectsSlider() {
           const l = pos - i;
           const d = Math.max(0, Math.min(2, l));
           if (l <= 0 || l >= 2) {
-            slide.style.display = "none";
+            // Keep slide in DOM but visually hidden (video decoder stays alive)
+            slide.style.visibility = "hidden";
+            slide.style.clipPath = "inset(100%)";
+            // Pause far-away videos to save decoder slots
+            if (l <= -0.5 || l >= 2.5) {
+              const vid = slide.querySelector("video");
+              if (vid && !vid.paused) vid.pause();
+            }
             continue;
           }
 
-          slide.style.display = "block";
+          slide.style.visibility = "visible";
           slide.style.clipPath = getPolygonClip(side, l);
 
           const media = slide.querySelector<HTMLElement>("img, video");
           if (media) {
             const drift = (1 - d) * 25 * driftDir;
             media.style.transform = `translateY(${drift}%) scale(1.25)`;
+            // Ensure video stays playing when slide is visible
+            if (media.tagName === "VIDEO" && (media as HTMLVideoElement).paused) {
+              (media as HTMLVideoElement).play().catch(() => {});
+            }
           }
 
           const isCurrentActive = Math.round(pos - 1) === i;
@@ -248,7 +274,7 @@ export default function ProjectsSlider() {
         }
       });
 
-      // Synchronize video players (throttled to every 10 frames)
+      // Synchronize video players & stall recovery (throttled to every 10 frames)
       syncFrameCount++;
       if (syncFrameCount % 10 === 0) {
         for (let i = minIdx; i <= maxIdx; i++) {
@@ -258,20 +284,33 @@ export default function ProjectsSlider() {
 
           const leftVideo = leftSlide.querySelector("video");
           const rightVideo = rightSlide.querySelector("video");
-          if (leftVideo && rightVideo) {
-            if (!leftVideo.paused && rightVideo.paused) {
-              rightVideo.play().catch(() => {});
-            } else if (leftVideo.paused && !rightVideo.paused) {
+          if (!leftVideo || !rightVideo) continue;
+
+          // Stall recovery: force-play both videos on visible slides
+          const isSlideVisible = (pos - i) > 0 && (pos - i) < 2;
+          if (isSlideVisible) {
+            if (leftVideo.paused && leftVideo.readyState >= 2) {
               leftVideo.play().catch(() => {});
             }
-
-            if (
-              leftVideo.readyState >= 2 &&
-              rightVideo.readyState >= 2 &&
-              Math.abs(leftVideo.currentTime - rightVideo.currentTime) > 0.35
-            ) {
-              rightVideo.currentTime = leftVideo.currentTime;
+            if (rightVideo.paused && rightVideo.readyState >= 2) {
+              rightVideo.play().catch(() => {});
             }
+          }
+
+          // Cross-side sync: if one side is playing, start the other
+          if (!leftVideo.paused && rightVideo.paused) {
+            rightVideo.play().catch(() => {});
+          } else if (leftVideo.paused && !rightVideo.paused) {
+            leftVideo.play().catch(() => {});
+          }
+
+          // Time sync: keep both sides at the same playback position
+          if (
+            leftVideo.readyState >= 2 &&
+            rightVideo.readyState >= 2 &&
+            Math.abs(leftVideo.currentTime - rightVideo.currentTime) > 0.35
+          ) {
+            rightVideo.currentTime = leftVideo.currentTime;
           }
         }
       }
