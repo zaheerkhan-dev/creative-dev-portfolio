@@ -50,7 +50,13 @@ export default function LoadingScreen({ children }: { children: React.ReactNode 
       }
 
       const getDigitHeight = () => {
-        return window.innerWidth < 768 ? 48 : 64;
+        if (digitHundredRef.current) {
+          const num = digitHundredRef.current.querySelector<HTMLElement>(".num");
+          if (num && num.offsetHeight > 0) {
+            return num.offsetHeight;
+          }
+        }
+        return window.innerWidth < 768 ? 56 : 80;
       };
 
       const getScrollOffset = (targetIndex: number) => {
@@ -156,37 +162,37 @@ export default function LoadingScreen({ children }: { children: React.ReactNode 
         className="w-full h-full fixed inset-0 bg-foreground font-bigger-display z-[99] overflow-hidden"
       >
         <div className="absolute bottom-6 right-6 sm:bottom-8 sm:right-8 flex items-end gap-2 sm:gap-3 max-w-[calc(100vw-3rem)]">
-          <p className="w-max text-background text-2xl sm:text-3xl md:text-5xl uppercase leading-none pb-1 md:pb-2">
+          <p className="w-max text-background text-2xl sm:text-3xl md:text-5xl uppercase leading-none pb-2 sm:pb-3 md:pb-4">
             Loading
           </p>
-          <div className="counter h-[48px] md:h-[64px] flex text-4xl sm:text-5xl md:text-7xl font-light text-background overflow-hidden leading-[48px] md:leading-[64px]">
+          <div className="counter h-[56px] md:h-[80px] flex text-4xl sm:text-5xl md:text-7xl font-light text-background overflow-hidden leading-[56px] md:leading-[80px]">
             {/* Hundreds column: 0 -> 1 */}
             <div ref={digitHundredRef} className="digit">
-              <div className="num h-[48px] md:h-[64px] flex items-center justify-center">0</div>
-              <div className="num h-[48px] md:h-[64px] flex items-center justify-center">1</div>
+              <div className="num h-[56px] md:h-[80px] flex items-center justify-center">0</div>
+              <div className="num h-[56px] md:h-[80px] flex items-center justify-center">1</div>
             </div>
             {/* Tens column: 0, 1, ..., 9, 0 */}
             <div ref={digitTenRef} className="digit">
               {Array.from({ length: 10 }).map((_, r) => (
-                <div key={r} className="num h-[48px] md:h-[64px] flex items-center justify-center">
+                <div key={r} className="num h-[56px] md:h-[80px] flex items-center justify-center">
                   {r}
                 </div>
               ))}
-              <div className="num h-[48px] md:h-[64px] flex items-center justify-center">0</div>
+              <div className="num h-[56px] md:h-[80px] flex items-center justify-center">0</div>
             </div>
             {/* Ones column: 0..9, 0..9, 0 (21 numbers total) */}
             <div ref={digitOneRef} className="digit">
               {Array.from({ length: 21 }).map((_, r) => (
-                <div key={r} className="num h-[48px] md:h-[64px] flex items-center justify-center">
+                <div key={r} className="num h-[56px] md:h-[80px] flex items-center justify-center">
                   {r % 10}
                 </div>
               ))}
             </div>
-            <div className="digit flex items-center h-[48px] md:h-[64px]">%</div>
+            <div className="digit flex items-center justify-center h-[56px] md:h-[80px] leading-[56px] md:leading-[80px]">%</div>
           </div>
           <div
             ref={progressBarRef}
-            className="progress-bar relative top-[-10px] md:top-[-14px] w-0 h-[3px] md:h-[4px] bg-background shrink-0"
+            className="progress-bar relative top-[-14px] md:top-[-20px] w-0 h-[3px] md:h-[4px] bg-background shrink-0"
           />
         </div>
       </div>
