@@ -159,6 +159,7 @@ export default function ProjectsSlider() {
   // Animation Frame Loop
   useEffect(() => {
     let animId: number;
+    let syncFrameCount = 0;
     const leftEl = leftMap.current;
     const rightEl = rightMap.current;
 
@@ -247,27 +248,30 @@ export default function ProjectsSlider() {
         }
       });
 
-      // Synchronize video players
-      for (let i = minIdx; i <= maxIdx; i++) {
-        const leftSlide = leftMap.current.get(i);
-        const rightSlide = rightMap.current.get(i);
-        if (!leftSlide || !rightSlide) continue;
+      // Synchronize video players (throttled to every 10 frames)
+      syncFrameCount++;
+      if (syncFrameCount % 10 === 0) {
+        for (let i = minIdx; i <= maxIdx; i++) {
+          const leftSlide = leftMap.current.get(i);
+          const rightSlide = rightMap.current.get(i);
+          if (!leftSlide || !rightSlide) continue;
 
-        const leftVideo = leftSlide.querySelector("video");
-        const rightVideo = rightSlide.querySelector("video");
-        if (leftVideo && rightVideo) {
-          if (!leftVideo.paused && rightVideo.paused) {
-            rightVideo.play().catch(() => {});
-          } else if (leftVideo.paused && !rightVideo.paused) {
-            leftVideo.play().catch(() => {});
-          }
+          const leftVideo = leftSlide.querySelector("video");
+          const rightVideo = rightSlide.querySelector("video");
+          if (leftVideo && rightVideo) {
+            if (!leftVideo.paused && rightVideo.paused) {
+              rightVideo.play().catch(() => {});
+            } else if (leftVideo.paused && !rightVideo.paused) {
+              leftVideo.play().catch(() => {});
+            }
 
-          if (
-            leftVideo.readyState >= 2 &&
-            rightVideo.readyState >= 2 &&
-            Math.abs(leftVideo.currentTime - rightVideo.currentTime) > 0.35
-          ) {
-            rightVideo.currentTime = leftVideo.currentTime;
+            if (
+              leftVideo.readyState >= 2 &&
+              rightVideo.readyState >= 2 &&
+              Math.abs(leftVideo.currentTime - rightVideo.currentTime) > 0.35
+            ) {
+              rightVideo.currentTime = leftVideo.currentTime;
+            }
           }
         }
       }

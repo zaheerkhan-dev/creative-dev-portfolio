@@ -59,6 +59,7 @@ export default function ParticleCanvas({
   const lastTimeRef = useRef<number>(0);
   const vaoRef = useRef<any>(null);
   const vaoExtRef = useRef<any>(null);
+  const wakeLoopRef = useRef<(() => void) | null>(null);
 
   const pathname = usePathname();
   const isHomePage = pathname === "/";
@@ -78,6 +79,7 @@ export default function ParticleCanvas({
       canvas.style.display = isHomePage ? "block" : "none";
       if (isHomePage) {
         framesRemainingRef.current = 300;
+        wakeLoopRef.current?.();
       }
     }
   }, [isHomePage]);
@@ -230,10 +232,19 @@ export default function ParticleCanvas({
         framesRemainingRef.current--;
         updatePhysics(deltaTime);
         render();
+        rafRef.current = requestAnimationFrame(animateLoop);
+      } else {
+        rafRef.current = null;
       }
-
-      rafRef.current = requestAnimationFrame(animateLoop);
     };
+
+    const wakeLoop = () => {
+      if (rafRef.current === null && !isCancelled) {
+        lastTimeRef.current = 0;
+        rafRef.current = requestAnimationFrame(animateLoop);
+      }
+    };
+    wakeLoopRef.current = wakeLoop;
 
     const handlePointerMove = (e: MouseEvent | TouchEvent) => {
       const rect = canvas.getBoundingClientRect();
@@ -244,12 +255,14 @@ export default function ParticleCanvas({
       mousePosRef.current.x = (clientX - rect.left) * dpr;
       mousePosRef.current.y = (clientY - rect.top) * dpr;
       framesRemainingRef.current = 300;
+      wakeLoop();
     };
 
     const handlePointerLeave = () => {
       mousePosRef.current.x = -9999;
       mousePosRef.current.y = -9999;
       framesRemainingRef.current = 300;
+      wakeLoop();
     };
 
     const handleWindowResize = () => {
@@ -394,6 +407,7 @@ export default function ParticleCanvas({
 
         framesRemainingRef.current = 300;
         render();
+        wakeLoopRef.current?.();
       };
 
       // Load image and handle both fresh load and cached image
@@ -434,7 +448,11 @@ export default function ParticleCanvas({
         }
 
         window.removeEventListener("resize", handleWindowResize);
-        if (rafRef.current) cancelAnimationFrame(rafRef.current);
+        if (rafRef.current) {
+          cancelAnimationFrame(rafRef.current);
+          rafRef.current = null;
+        }
+        wakeLoopRef.current = null;
 
         const currentGl = glRef.current;
         if (currentGl) {

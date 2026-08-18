@@ -95,8 +95,24 @@ export default function ScrollRevealText({
           const total = allChars.length;
           const isForward = progress >= lastProgressRef.current;
           const activeIndex = Math.floor(progress * total);
+          const lastActiveIndex = Math.floor(lastProgressRef.current * total);
 
-          allChars.forEach((charEl, idx) => {
+          // Only process the range of chars that changed, not all chars
+          let rangeStart: number, rangeEnd: number;
+          if (progress >= 0.98) {
+            rangeStart = 0;
+            rangeEnd = total - 1;
+          } else if (isForward) {
+            rangeStart = Math.max(0, lastActiveIndex - 3);
+            rangeEnd = Math.min(total - 1, activeIndex + 1);
+          } else {
+            rangeStart = Math.max(0, activeIndex);
+            rangeEnd = Math.min(total - 1, lastActiveIndex + 1);
+          }
+
+          for (let idx = rangeStart; idx <= rangeEnd; idx++) {
+            const charEl = allChars[idx];
+
             if (!isForward && idx >= activeIndex) {
               if (timeoutsRef.current.has(idx)) {
                 clearTimeout(timeoutsRef.current.get(idx)!);
@@ -104,7 +120,7 @@ export default function ScrollRevealText({
               }
               animatedSetRef.current.delete(idx);
               gsap.set(charEl, { color: colorInitial });
-              return;
+              continue;
             }
 
             if (!animatedSetRef.current.has(idx)) {
@@ -135,7 +151,7 @@ export default function ScrollRevealText({
                 gsap.set(charEl, { color: colorInitial });
               }
             }
-          });
+          }
 
           lastProgressRef.current = progress;
         },

@@ -1,0 +1,1483 @@
+﻿
+// ========== src\components\ParticleCanvas.tsx ==========
+"use client";
+
+import React, { useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
+
+interface ParticleCanvasProps {
+  img?: string;
+  mixBlend?: boolean;
+}
+
+interface Particle {
+  originX: number;
+  originY: number;
+  velocityX: number;
+  velocityY: number;
+}
+
+const VERTEX_SHADER_SRC = `
+  precision highp float;
+  uniform vec2 u_resolution;
+  attribute vec2 a_position;
+  attribute vec4 a_color;
+  varying vec4 v_color;
+  void main() {
+      vec2 zeroToOne = a_position / u_resolution;
+      vec2 clipSpace = (zeroToOne * 2.0 - 1.0);
+      v_color = a_color;
+      gl_Position = vec4(clipSpace * vec2(1.0, -1.0), 0.0, 1.0);
+      gl_PointSize = 3.5;
+  }
+`;
+
+const FRAGMENT_SHADER_SRC = `
+  precision highp float;
+  varying vec4 v_color;
+  void main() {
+      if (v_color.a < 0.01) discard;
+      vec2 coord = gl_PointCoord - vec2(0.5);
+      float dist = length(coord);
+      float alpha = 1.0 - smoothstep(0.0, 0.4, dist);
+      gl_FragColor = vec4(v_color.rgb, min(1.0, v_color.a * alpha * 2.0));
+  }
+`;
+
+export default function ParticleCanvas({
+  img = "/Images/Home/Home_Particle_Text.webp",
+  mixBlend = true,
+}: ParticleCanvasProps) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const glRef = useRef<WebGLRenderingContext | null>(null);
+  const programRef = useRef<WebGLProgram | null>(null);
+  const particlesRef = useRef<Particle[]>([]);
+  const posBufferRef = useRef<WebGLBuffer | null>(null);
+  const colorBufferRef = useRef<WebGLBuffer | null>(null);
+  const posArrayRef = useRef<Float32Array | null>(null);
+  const rafRef = useRef<number | null>(null);
+  const framesRemainingRef = useRef<number>(300);
+  const mousePosRef = useRef<{ x: number; y: number }>({ x: -9999, y: -9999 });
+  const lastTimeRef = useRef<number>(0);
+  const vaoRef = useRef<any>(null);
+  const vaoExtRef = useRef<any>(null);
+
+  const pathname = usePathname();
+  const isHomePage = pathname === "/";
+  const [isMobile, setIsMobile] = useState(() =>
+    typeof window !== "undefined" ? window.innerWidth < 768 : false
+  );
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (canvas) {
+      canvas.style.display = isHomePage ? "block" : "none";
+      if (isHomePage) {
+        framesRemainingRef.current = 300;
+      }
+    }
+  }, [isHomePage]);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    let isCancelled = false;
+
+    const config = {
+      logoPath: img,
+      logoSize: isMobile ? 600 : 750,
+      particleDensity: 1.5,
+      distortionRadius: 2500,
+      forceStrength: 0.001,
+      maxDisplacement: 50,
+      returnForce: 0.04,
+    };
+
+    const updateSize = () => {
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+      canvas.width = window.innerWidth * dpr;
+      canvas.height = window.innerHeight * dpr;
+      canvas.style.width = `${window.innerWidth}px`;
+      canvas.style.height = `${window.innerHeight}px`;
+    };
+
+    const createShader = (gl: WebGLRenderingContext, type: number, source: string) => {
+      const shader = gl.createShader(type);
+      if (!shader) return null;
+      gl.shaderSource(shader, source);
+      gl.compileShader(shader);
+      if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+        console.error("Shader Compile Error:", gl.getShaderInfoLog(shader));
+        gl.deleteShader(shader);
+        return null;
+      }
+      return shader;
+    };
+
+    const render = () => {
+      const gl = glRef.current;
+      const program = programRef.current;
+      if (!gl || !program || particlesRef.current.length === 0) return;
+
+      gl.viewport(0, 0, canvas.width, canvas.height);
+      gl.clearColor(0, 0, 0, 0);
+      gl.clear(gl.COLOR_BUFFER_BIT);
+      gl.useProgram(program);
+
+      const uRes = gl.getUniformLocation(program, "u_resolution");
+      gl.uniform2f(uRes, canvas.width, canvas.height);
+
+      if (vaoExtRef.current && vaoRef.current) {
+        vaoExtRef.current.bindVertexArrayOES(vaoRef.current);
+        gl.drawArrays(gl.POINTS, 0, particlesRef.current.length);
+        vaoExtRef.current.bindVertexArrayOES(null);
+      } else {
+        const aPos = gl.getAttribLocation(program, "a_position");
+        gl.bindBuffer(gl.ARRAY_BUFFER, posBufferRef.current);
+        gl.enableVertexAttribArray(aPos);
+        gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
+
+        const aCol = gl.getAttribLocation(program, "a_color");
+        gl.bindBuffer(gl.ARRAY_BUFFER, colorBufferRef.current);
+        gl.enableVertexAttribArray(aCol);
+        gl.vertexAttribPointer(aCol, 4, gl.FLOAT, false, 0, 0);
+
+        gl.drawArrays(gl.POINTS, 0, particlesRef.current.length);
+      }
+    };
+
+    const updatePhysics = (deltaTimeSec: number) => {
+      const dt = Math.min(2, deltaTimeSec / (1 / 60));
+      const particles = particlesRef.current;
+      const positions = posArrayRef.current;
+      if (!positions) return;
+
+      const radiusSq = config.distortionRadius * config.distortionRadius;
+      const mouse = mousePosRef.current;
+
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
+        const curX = positions[2 * i];
+        const curY = positions[2 * i + 1];
+
+        const dx = mouse.x - curX;
+        const dy = mouse.y - curY;
+        const distSq = dx * dx + dy * dy;
+
+        if (distSq < radiusSq && distSq > 0) {
+          const force = -radiusSq / distSq;
+          const angle = Math.atan2(dy, dx);
+          const dispFromOrigin = Math.sqrt(
+            (curX - p.originX) ** 2 + (curY - p.originY) ** 2
+          );
+          const proximity = Math.max(
+            0.1,
+            1 - dispFromOrigin / (2 * config.maxDisplacement)
+          );
+
+          p.velocityX +=
+            force * Math.cos(angle) * config.forceStrength * proximity * dt;
+          p.velocityY +=
+            force * Math.sin(angle) * config.forceStrength * proximity * dt;
+        }
+
+        // Velocity damping
+        const damp = Math.pow(0.82, dt);
+        p.velocityX *= damp;
+        p.velocityY *= damp;
+
+        // Spring return force
+        const returnEase = 1 - Math.pow(1 - config.returnForce, dt);
+        const nextX = curX + p.velocityX + (p.originX - curX) * returnEase;
+        const nextY = curY + p.velocityY + (p.originY - curY) * returnEase;
+
+        const offsetX = nextX - p.originX;
+        const offsetY = nextY - p.originY;
+        const offsetDistSq = offsetX * offsetX + offsetY * offsetY;
+
+        if (offsetDistSq > config.maxDisplacement * config.maxDisplacement) {
+          const offsetDist = Math.sqrt(offsetDistSq);
+          const factor = config.maxDisplacement / offsetDist;
+          positions[2 * i] = p.originX + offsetX * factor;
+          positions[2 * i + 1] = p.originY + offsetY * factor;
+          p.velocityX *= 0.7;
+          p.velocityY *= 0.7;
+        } else {
+          positions[2 * i] = nextX;
+          positions[2 * i + 1] = nextY;
+        }
+      }
+
+      const gl = glRef.current;
+      if (gl && posBufferRef.current) {
+        gl.bindBuffer(gl.ARRAY_BUFFER, posBufferRef.current);
+        gl.bufferSubData(gl.ARRAY_BUFFER, 0, positions);
+      }
+    };
+
+    const animateLoop = (timestamp: number) => {
+      if (isCancelled) return;
+      if (lastTimeRef.current === 0) lastTimeRef.current = timestamp;
+      const deltaTime = (timestamp - lastTimeRef.current) / 1000;
+      lastTimeRef.current = timestamp;
+
+      if (framesRemainingRef.current > 0) {
+        framesRemainingRef.current--;
+        updatePhysics(deltaTime);
+        render();
+      }
+
+      rafRef.current = requestAnimationFrame(animateLoop);
+    };
+
+    const handlePointerMove = (e: MouseEvent | TouchEvent) => {
+      const rect = canvas.getBoundingClientRect();
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+      const clientX = "touches" in e ? e.touches[0].clientX : e.clientX;
+      const clientY = "touches" in e ? e.touches[0].clientY : e.clientY;
+
+      mousePosRef.current.x = (clientX - rect.left) * dpr;
+      mousePosRef.current.y = (clientY - rect.top) * dpr;
+      framesRemainingRef.current = 300;
+    };
+
+    const handlePointerLeave = () => {
+      mousePosRef.current.x = -9999;
+      mousePosRef.current.y = -9999;
+      framesRemainingRef.current = 300;
+    };
+
+    const handleWindowResize = () => {
+      const oldCenterX = canvas.width / 2;
+      const oldCenterY = canvas.height / 2;
+      updateSize();
+
+      const particles = particlesRef.current;
+      const positions = posArrayRef.current;
+      if (particles.length > 0 && positions) {
+        const newCenterX = canvas.width / 2;
+        const newCenterY = canvas.height / 2;
+        const deltaX = newCenterX - oldCenterX;
+        const deltaY = newCenterY - oldCenterY;
+
+        for (let i = 0; i < particles.length; i++) {
+          particles[i].originX += deltaX;
+          particles[i].originY += deltaY;
+          positions[2 * i] += deltaX;
+          positions[2 * i + 1] += deltaY;
+        }
+
+        const gl = glRef.current;
+        if (gl && posBufferRef.current) {
+          gl.bindBuffer(gl.ARRAY_BUFFER, posBufferRef.current);
+          gl.bufferSubData(gl.ARRAY_BUFFER, 0, positions);
+          render();
+        }
+      }
+    };
+
+    // Initialize WebGL context
+    updateSize();
+    const gl = canvas.getContext("webgl", {
+      alpha: true,
+      depth: false,
+      stencil: false,
+      antialias: false,
+      powerPreference: "high-performance",
+      premultipliedAlpha: false,
+    });
+
+    if (!gl) return;
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+    glRef.current = gl;
+
+    // Create Shaders & Program
+    const vertShader = createShader(gl, gl.VERTEX_SHADER, VERTEX_SHADER_SRC);
+    const fragShader = createShader(gl, gl.FRAGMENT_SHADER, FRAGMENT_SHADER_SRC);
+    const program = gl.createProgram();
+
+    if (vertShader && fragShader && program) {
+      gl.attachShader(program, vertShader);
+      gl.attachShader(program, fragShader);
+      gl.linkProgram(program);
+      if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+        console.error("Program Link Error:", gl.getProgramInfoLog(program));
+        return;
+      }
+      programRef.current = program;
+
+      const processImage = (imgElement: HTMLImageElement) => {
+        if (isCancelled) return;
+        const offCanvas = document.createElement("canvas");
+        const offCtx = offCanvas.getContext("2d");
+        if (!offCtx) return;
+
+        offCanvas.width = config.logoSize;
+        offCanvas.height = config.logoSize;
+        const drawSize = config.logoSize * 0.9;
+        const drawOffset = (config.logoSize - drawSize) / 2;
+        offCtx.drawImage(imgElement, drawOffset, drawOffset, drawSize, drawSize);
+
+        const imgData = offCtx.getImageData(0, 0, config.logoSize, config.logoSize).data;
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2 + 50;
+
+        const posList: number[] = [];
+        const colorList: number[] = [];
+        const particleList: Particle[] = [];
+        const step = config.particleDensity;
+
+        for (let y = 0; y < config.logoSize; y += step) {
+          for (let x = 0; x < config.logoSize; x += step) {
+            const idx = (Math.floor(y) * config.logoSize + Math.floor(x)) * 4;
+            if (imgData[idx + 3] > 10) {
+              const px = centerX + (x - config.logoSize / 2);
+              const py = centerY + (y - config.logoSize / 2);
+              posList.push(px, py);
+
+              const r = imgData[idx] / 255;
+              const g = imgData[idx + 1] / 255;
+              const b = imgData[idx + 2] / 255;
+              colorList.push(r, g, b, 1);
+
+              particleList.push({
+                originX: px,
+                originY: py,
+                velocityX: 0,
+                velocityY: 0,
+              });
+            }
+          }
+        }
+
+        particlesRef.current = particleList;
+        posArrayRef.current = new Float32Array(posList);
+        const colArray = new Float32Array(colorList);
+
+        // Upload to GPU Buffers
+        const posBuf = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, posBuf);
+        gl.bufferData(gl.ARRAY_BUFFER, posArrayRef.current, gl.DYNAMIC_DRAW);
+        posBufferRef.current = posBuf;
+
+        const colBuf = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, colBuf);
+        gl.bufferData(gl.ARRAY_BUFFER, colArray, gl.STATIC_DRAW);
+        colorBufferRef.current = colBuf;
+
+        // Try VAO extension
+        const vaoExt = gl.getExtension("OES_vertex_array_object");
+        if (vaoExt) {
+          vaoExtRef.current = vaoExt;
+          const vao = vaoExt.createVertexArrayOES();
+          vaoExt.bindVertexArrayOES(vao);
+
+          const aPos = gl.getAttribLocation(program, "a_position");
+          gl.bindBuffer(gl.ARRAY_BUFFER, posBuf);
+          gl.enableVertexAttribArray(aPos);
+          gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
+
+          const aCol = gl.getAttribLocation(program, "a_color");
+          gl.bindBuffer(gl.ARRAY_BUFFER, colBuf);
+          gl.enableVertexAttribArray(aCol);
+          gl.vertexAttribPointer(aCol, 4, gl.FLOAT, false, 0, 0);
+
+          vaoExt.bindVertexArrayOES(null);
+          vaoRef.current = vao;
+        }
+
+        framesRemainingRef.current = 300;
+        render();
+      };
+
+      // Load image and handle both fresh load and cached image
+      const image = new Image();
+      image.crossOrigin = "anonymous";
+      image.onload = () => processImage(image);
+      image.src = config.logoPath;
+
+      if (image.complete && image.naturalWidth > 0) {
+        processImage(image);
+      }
+
+      // Start animation loop
+      lastTimeRef.current = 0;
+      framesRemainingRef.current = 300;
+      rafRef.current = requestAnimationFrame(animateLoop);
+
+      if (isMobile) {
+        document.addEventListener("touchstart", handlePointerMove, { passive: false });
+        document.addEventListener("touchmove", handlePointerMove, { passive: false });
+        document.addEventListener("touchend", handlePointerLeave);
+      } else {
+        document.addEventListener("mousemove", handlePointerMove);
+        document.addEventListener("mouseleave", handlePointerLeave);
+      }
+
+      window.addEventListener("resize", handleWindowResize);
+
+      return () => {
+        isCancelled = true;
+        if (isMobile) {
+          document.removeEventListener("touchstart", handlePointerMove);
+          document.removeEventListener("touchmove", handlePointerMove);
+          document.removeEventListener("touchend", handlePointerLeave);
+        } else {
+          document.removeEventListener("mousemove", handlePointerMove);
+          document.removeEventListener("mouseleave", handlePointerLeave);
+        }
+
+        window.removeEventListener("resize", handleWindowResize);
+        if (rafRef.current) cancelAnimationFrame(rafRef.current);
+
+        const currentGl = glRef.current;
+        if (currentGl) {
+          if (vaoRef.current && vaoExtRef.current) {
+            vaoExtRef.current.deleteVertexArrayOES(vaoRef.current);
+            vaoRef.current = null;
+          }
+          if (posBufferRef.current) {
+            currentGl.deleteBuffer(posBufferRef.current);
+            posBufferRef.current = null;
+          }
+          if (colorBufferRef.current) {
+            currentGl.deleteBuffer(colorBufferRef.current);
+            colorBufferRef.current = null;
+          }
+          if (programRef.current) {
+            currentGl.deleteProgram(programRef.current);
+            programRef.current = null;
+          }
+        }
+      };
+    }
+  }, [isMobile, img]);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      className={`fixed top-0 left-0 w-full h-full z-10 pointer-events-none ${
+        mixBlend ? "mix-blend-difference" : ""
+      }`}
+    />
+  );
+}
+
+// ========== src\components\HeroSection.tsx ==========
+"use client";
+
+import React from "react";
+import Image from "next/image";
+import ParticleCanvas from "./ParticleCanvas";
+import SocialLinks from "./SocialLinks";
+
+export default function HeroSection() {
+  return (
+    <section className="w-full h-svh flex justify-center relative overflow-hidden">
+      {/* Background Portrait Image */}
+      <div aria-hidden="true" className="absolute inset-0 z-0 overflow-hidden pointer-events-none select-none [-webkit-touch-callout:none]">
+        <Image
+          src="/Images/Home/Home_Image.webp"
+          alt="Creative developer portrait"
+          fill
+          sizes="100vw"
+          draggable={false}
+          className="object-cover md:scale-120 translate-y-8 md:translate-y-16 pointer-events-none select-none [-webkit-touch-callout:none]"
+          priority
+        />
+      </div>
+
+      {/* Center Top Title with mix-blend-difference */}
+      <div className="relative z-10 text-center mix-blend-difference">
+        <h1 className="tracking-[.6rem] md:mt-[5.5rem] mt-[8rem] uppercase text-[.8rem] md:text-[1rem] font-bold text-foreground font-barlow-condensed">
+          Zaheer Khan
+        </h1>
+      </div>
+
+      {/* Interactive WebGL Particle Cloud (78,631 points) */}
+      <ParticleCanvas img="/Images/Home/Home_Particle_Text.webp" mixBlend={true} />
+
+      {/* Social Links */}
+      <SocialLinks />
+
+      {/* Fixed Gradient Vignettes for cinematic framing */}
+      <div className="w-full h-screen fixed top-0 left-0 z-40 pointer-events-none">
+        <div className="absolute left-0 top-0 w-full h-[10rem] bg-gradient-to-b from-background to-transparent" />
+        <div className="absolute left-0 bottom-0 w-full h-[10rem] bg-gradient-to-t from-background to-transparent" />
+      </div>
+    </section>
+  );
+}
+
+// ========== src\components\LoadingScreen.tsx ==========
+"use client";
+
+import React, { useRef, useEffect } from "react";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
+import { useAppContext } from "@/context/AppContext";
+
+export default function LoadingScreen({ children }: { children: React.ReactNode }) {
+  const { setIsLoading, isLoading, setIsNavbarOpen } = useAppContext();
+  const loaderRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const digitHundredRef = useRef<HTMLDivElement>(null);
+  const digitTenRef = useRef<HTMLDivElement>(null);
+  const digitOneRef = useRef<HTMLDivElement>(null);
+  const progressBarRef = useRef<HTMLDivElement>(null);
+  const scopeRef = useRef<HTMLDivElement>(null);
+
+  // Failsafe timer to guarantee page reveals even if browser pauses animation
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (isLoading) {
+        setIsLoading(false);
+        setIsNavbarOpen(true);
+        if (loaderRef.current) {
+          loaderRef.current.style.display = "none";
+        }
+        if (contentRef.current) {
+          gsap.set(contentRef.current, { xPercent: 0 });
+        }
+      }
+    }, 3500);
+
+    return () => clearTimeout(timer);
+  }, [isLoading, setIsLoading, setIsNavbarOpen]);
+
+  useGSAP(
+    () => {
+      if (!isLoading) {
+        if (loaderRef.current) {
+          loaderRef.current.style.display = "none";
+        }
+        if (contentRef.current) {
+          gsap.set(contentRef.current, { xPercent: 0 });
+        }
+        return;
+      }
+
+      if (contentRef.current) {
+        gsap.set(contentRef.current, { xPercent: 100 });
+      }
+
+      const getDigitHeight = () => {
+        if (digitHundredRef.current) {
+          const num = digitHundredRef.current.querySelector<HTMLElement>(".num");
+          if (num && num.offsetHeight > 0) {
+            return num.offsetHeight;
+          }
+        }
+        return window.innerWidth < 768 ? 56 : 80;
+      };
+
+      const getScrollOffset = (targetIndex: number) => {
+        const height = getDigitHeight();
+        return { y: -(targetIndex * height) };
+      };
+
+      const isMobile = window.innerWidth < 768;
+      const targetWidth1 = isMobile ? "60px" : "200px";
+      const targetWidth2 = isMobile ? "100px" : "280px";
+
+      const tl = gsap.timeline({
+        onComplete: () => {
+          setIsLoading(false);
+          setIsNavbarOpen(true);
+          if (loaderRef.current) {
+            loaderRef.current.style.display = "none";
+          }
+          if (contentRef.current) {
+            gsap.set(contentRef.current, { xPercent: 0 });
+          }
+        },
+      });
+
+      // Phase 1: 0% to ~90%
+      tl.to(progressBarRef.current, {
+        width: targetWidth1,
+        duration: 1.4,
+        ease: "power4.inOut",
+      })
+        .to(
+          digitTenRef.current,
+          {
+            ...getScrollOffset(9),
+            duration: 1.6,
+            ease: "power2.inOut",
+          },
+          "<"
+        )
+        .to(
+          digitOneRef.current,
+          {
+            ...getScrollOffset(20),
+            duration: 1.4,
+            ease: "power2.inOut",
+          },
+          "<"
+        );
+
+      // Phase 2: 90% to 100%
+      tl.to(digitHundredRef.current, {
+        ...getScrollOffset(1),
+        duration: 0.7,
+        ease: "power2.inOut",
+      })
+        .to(
+          digitTenRef.current,
+          {
+            ...getScrollOffset(10),
+            duration: 0.7,
+            ease: "power2.inOut",
+          },
+          "-=0.6"
+        )
+        .to(
+          progressBarRef.current,
+          {
+            width: targetWidth2,
+            opacity: 0,
+            duration: 1.0,
+            ease: "power4.out",
+          },
+          "-=0.3"
+        );
+
+      // Phase 3: Screen wipe off to reveal content
+      tl.to(
+        loaderRef.current,
+        {
+          xPercent: -100,
+          duration: 1.0,
+          ease: "power3.inOut",
+        },
+        "<-=0.3"
+      ).to(
+        contentRef.current,
+        {
+          xPercent: 0,
+          duration: 1.0,
+          ease: "power3.inOut",
+        },
+        "<"
+      );
+    },
+    { scope: scopeRef, dependencies: [isLoading] }
+  );
+
+  return (
+    <div ref={scopeRef} className="overflow-hidden">
+      {/* Preloader Panel */}
+      <div
+        ref={loaderRef}
+        className="w-full h-full fixed inset-0 bg-foreground font-bigger-display z-[99] overflow-hidden"
+      >
+        <div className="absolute bottom-6 right-6 sm:bottom-8 sm:right-8 flex items-end gap-2 sm:gap-3 max-w-[calc(100vw-3rem)]">
+          <p className="w-max text-background text-2xl sm:text-3xl md:text-5xl uppercase leading-none pb-2 sm:pb-3 md:pb-4">
+            Loading
+          </p>
+          <div className="counter h-[56px] md:h-[80px] flex text-4xl sm:text-5xl md:text-7xl font-light text-background overflow-hidden leading-[56px] md:leading-[80px]">
+            {/* Hundreds column: 0 -> 1 */}
+            <div ref={digitHundredRef} className="digit">
+              <div className="num h-[56px] md:h-[80px] flex items-center justify-center">0</div>
+              <div className="num h-[56px] md:h-[80px] flex items-center justify-center">1</div>
+            </div>
+            {/* Tens column: 0, 1, ..., 9, 0 */}
+            <div ref={digitTenRef} className="digit">
+              {Array.from({ length: 10 }).map((_, r) => (
+                <div key={r} className="num h-[56px] md:h-[80px] flex items-center justify-center">
+                  {r}
+                </div>
+              ))}
+              <div className="num h-[56px] md:h-[80px] flex items-center justify-center">0</div>
+            </div>
+            {/* Ones column: 0..9, 0..9, 0 (21 numbers total) */}
+            <div ref={digitOneRef} className="digit">
+              {Array.from({ length: 21 }).map((_, r) => (
+                <div key={r} className="num h-[56px] md:h-[80px] flex items-center justify-center">
+                  {r % 10}
+                </div>
+              ))}
+            </div>
+            <div className="digit flex items-center justify-center h-[56px] md:h-[80px] leading-[56px] md:leading-[80px]">%</div>
+          </div>
+          <div
+            ref={progressBarRef}
+            className="progress-bar relative top-[-14px] md:top-[-20px] w-0 h-[3px] md:h-[4px] bg-background shrink-0"
+          />
+        </div>
+      </div>
+
+      {/* Main Content wrapper */}
+      <div ref={contentRef} className="overflow-hidden">
+        {children}
+      </div>
+    </div>
+  );
+}
+
+// ========== src\lib\soundEffects.ts ==========
+"use client";
+
+import { useRef, useCallback, useEffect } from "react";
+
+/**
+ * Preloaded sound effect pool for instant playback.
+ * Uses multiple Audio instances per sound to allow overlapping plays.
+ */
+const POOL_SIZE = 3;
+
+interface SoundPool {
+  instances: HTMLAudioElement[];
+  index: number;
+}
+
+const pools: Record<string, SoundPool> = {};
+
+function getPool(src: string): SoundPool {
+  if (!pools[src]) {
+    const instances: HTMLAudioElement[] = [];
+    for (let i = 0; i < POOL_SIZE; i++) {
+      const audio = new Audio(src);
+      audio.preload = "auto";
+      audio.volume = 0.3;
+      instances.push(audio);
+    }
+    pools[src] = { instances, index: 0 };
+  }
+  return pools[src];
+}
+
+export function playSound(src: string) {
+  if (typeof window === "undefined") return;
+  const pool = getPool(src);
+  const audio = pool.instances[pool.index];
+  pool.index = (pool.index + 1) % POOL_SIZE;
+  audio.currentTime = 0;
+  audio.play().catch(() => {
+    // Autoplay blocked â€” ignore silently
+  });
+}
+
+export function playClick() {
+  playSound("/sounds/click.mp3");
+}
+
+export function playHover() {
+  playSound("/sounds/hover.mp3");
+}
+
+/**
+ * Hook that preloads sounds on mount and returns play functions.
+ */
+export function useSoundEffects() {
+  const initialized = useRef(false);
+
+  useEffect(() => {
+    if (initialized.current) return;
+    initialized.current = true;
+    // Preload pools
+    getPool("/sounds/click.mp3");
+    getPool("/sounds/hover.mp3");
+  }, []);
+
+  return {
+    playClick: useCallback(() => playClick(), []),
+    playHover: useCallback(() => playHover(), []),
+  };
+}
+
+// ========== src\lib\splitText.ts ==========
+/**
+ * Character/Word/Line SplitText utility matching the extracted GSAP SplitText behavior
+ * Preserves the target element (tag, classes, font styling) and wraps internal text in word and char spans.
+ */
+export class SplitText {
+  elements: HTMLElement[];
+  chars: HTMLElement[] = [];
+  words: HTMLElement[] = [];
+  private originalContent: { el: HTMLElement; html: string; ariaLabel: string | null }[] = [];
+
+  constructor(
+    target: string | HTMLElement | HTMLElement[] | NodeListOf<HTMLElement>,
+    options?: { type?: string; wordsClass?: string; charsClass?: string }
+  ) {
+    if (typeof target === "string") {
+      this.elements = Array.from(document.querySelectorAll(target));
+    } else if (target instanceof HTMLElement) {
+      this.elements = [target];
+    } else {
+      this.elements = Array.from(target as HTMLElement[]);
+    }
+
+    this.split(options);
+  }
+
+  static create(
+    target: string | HTMLElement | HTMLElement[] | NodeListOf<HTMLElement>,
+    options?: { type?: string; wordsClass?: string; charsClass?: string }
+  ) {
+    return new SplitText(target, options);
+  }
+
+  split(options?: { type?: string; wordsClass?: string; charsClass?: string }) {
+    this.revert();
+    const wordsClass = options?.wordsClass || "word";
+    const charsClass = options?.charsClass || "char";
+
+    this.elements.forEach((el) => {
+      const originalText = el.textContent || "";
+      this.originalContent.push({
+        el,
+        html: el.innerHTML,
+        ariaLabel: el.getAttribute("aria-label"),
+      });
+
+      el.setAttribute("aria-label", originalText);
+      el.innerHTML = "";
+
+      // Split text into words (preserving spaces)
+      const rawWords = originalText.trim().split(/\s+/);
+      const wordsArr: HTMLElement[] = [];
+      const charsArr: HTMLElement[] = [];
+
+      rawWords.forEach((wordText, wIdx) => {
+        const wordSpan = document.createElement("span");
+        wordSpan.className = `${wordsClass} inline-block relative`;
+        wordSpan.setAttribute("aria-hidden", "true");
+        wordSpan.setAttribute("aria-label", wordText);
+        wordSpan.style.fontFamily = "inherit";
+        wordSpan.style.fontSize = "inherit";
+        wordSpan.style.fontWeight = "inherit";
+        wordSpan.style.textTransform = "inherit";
+        wordSpan.style.letterSpacing = "inherit";
+
+        const charList = Array.from(wordText);
+        charList.forEach((char) => {
+          const charSpan = document.createElement("span");
+          charSpan.className = `${charsClass} inline-block relative`;
+          charSpan.setAttribute("aria-hidden", "true");
+          charSpan.style.fontFamily = "inherit";
+          charSpan.style.fontSize = "inherit";
+          charSpan.style.fontWeight = "inherit";
+          charSpan.style.textTransform = "inherit";
+          charSpan.style.letterSpacing = "inherit";
+          charSpan.textContent = char;
+          wordSpan.appendChild(charSpan);
+          charsArr.push(charSpan);
+        });
+
+        el.appendChild(wordSpan);
+        wordsArr.push(wordSpan);
+
+        // Add space between words
+        if (wIdx < rawWords.length - 1) {
+          el.appendChild(document.createTextNode(" "));
+        }
+      });
+
+      this.words.push(...wordsArr);
+      this.chars.push(...charsArr);
+    });
+
+    return this;
+  }
+
+  revert() {
+    this.originalContent.forEach(({ el, html, ariaLabel }) => {
+      el.innerHTML = html;
+      if (ariaLabel) {
+        el.setAttribute("aria-label", ariaLabel);
+      } else {
+        el.removeAttribute("aria-label");
+      }
+    });
+    this.chars = [];
+    this.words = [];
+    this.originalContent = [];
+  }
+}
+
+// ========== src\components\about\SmudgeMask.tsx ==========
+"use client";
+
+import React, { useRef, useEffect, useId } from "react";
+import gsap from "gsap";
+
+interface SmudgeMaskProps {
+  foreground: React.ReactNode;
+  background: React.ReactNode;
+  className?: string;
+}
+
+interface StampedCircle {
+  circle: SVGCircleElement;
+  radius: { current: number };
+  tween?: gsap.core.Tween;
+}
+
+export default function SmudgeMask({
+  foreground,
+  background,
+  className = "",
+}: SmudgeMaskProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const maskGroupRef = useRef<SVGGElement>(null);
+  const rawId = useId().replace(/:/g, "");
+  const gooId = `smudge-goo-${rawId}`;
+  const maskId = `smudge-mask-${rawId}`;
+
+  const lastPos = useRef({ x: 0, y: 0 });
+  const isInteracting = useRef(false);
+  const circlesRef = useRef<StampedCircle[]>([]);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    const maskGroup = maskGroupRef.current;
+    if (!container || !maskGroup) return;
+
+    const stampCircle = (x: number, y: number, r: number = 38) => {
+      const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      circle.setAttribute("cx", x.toString());
+      circle.setAttribute("cy", y.toString());
+      circle.setAttribute("r", r.toString());
+      circle.setAttribute("fill", "white");
+      maskGroup.appendChild(circle);
+
+      const item: StampedCircle = {
+        circle,
+        radius: { current: r },
+      };
+      circlesRef.current.push(item);
+    };
+
+    const handlePointerMove = (clientX: number, clientY: number) => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+
+      const rect = container.getBoundingClientRect();
+      const pad = window.innerWidth < 768 ? 112 : 144; // match -inset-28 (7rem=112px) / -inset-36 (9rem=144px)
+      const currentX = clientX - rect.left + pad;
+      const currentY = clientY - rect.top + pad;
+
+      if (!isInteracting.current) {
+        lastPos.current = { x: currentX, y: currentY };
+        isInteracting.current = true;
+        stampCircle(currentX, currentY);
+        return;
+      }
+
+      // Interpolate between last and current pos to avoid gaps
+      const dx = currentX - lastPos.current.x;
+      const dy = currentY - lastPos.current.y;
+      const dist = Math.hypot(dx, dy);
+      const step = 12;
+      const count = Math.floor(dist / step);
+
+      for (let i = 1; i <= count; i++) {
+        const t = i / (count + 1);
+        const ix = lastPos.current.x + dx * t;
+        const iy = lastPos.current.y + dy * t;
+        stampCircle(ix, iy);
+      }
+
+      stampCircle(currentX, currentY);
+      lastPos.current = { x: currentX, y: currentY };
+    };
+
+    const dissolveCircles = () => {
+      isInteracting.current = false;
+      const list = [...circlesRef.current];
+      circlesRef.current = [];
+
+      list.forEach((item, idx) => {
+        item.tween = gsap.to(item.radius, {
+          current: 0,
+          duration: 1.5,
+          delay: (idx % 12) * 0.02,
+          ease: "power2.inOut",
+          onUpdate: () => {
+            item.circle.setAttribute("r", Math.max(0, item.radius.current).toString());
+          },
+          onComplete: () => {
+            item.circle.remove();
+          },
+        });
+      });
+    };
+
+    const onMouseMove = (e: MouseEvent) => {
+      handlePointerMove(e.clientX, e.clientY);
+    };
+
+    const onMouseEnter = (e: MouseEvent) => {
+      handlePointerMove(e.clientX, e.clientY);
+    };
+
+    const onMouseLeave = () => {
+      timeoutRef.current = setTimeout(() => {
+        dissolveCircles();
+      }, 300);
+    };
+
+    const onTouchMove = (e: TouchEvent) => {
+      if (e.touches.length > 0) {
+        handlePointerMove(e.touches[0].clientX, e.touches[0].clientY);
+      }
+    };
+
+    const onTouchEnd = () => {
+      timeoutRef.current = setTimeout(() => {
+        dissolveCircles();
+      }, 300);
+    };
+
+    container.addEventListener("mousemove", onMouseMove);
+    container.addEventListener("mouseenter", onMouseEnter);
+    container.addEventListener("mouseleave", onMouseLeave);
+    container.addEventListener("touchmove", onTouchMove, { passive: true });
+    container.addEventListener("touchend", onTouchEnd);
+
+    return () => {
+      container.removeEventListener("mousemove", onMouseMove);
+      container.removeEventListener("mouseenter", onMouseEnter);
+      container.removeEventListener("mouseleave", onMouseLeave);
+      container.removeEventListener("touchmove", onTouchMove);
+      container.removeEventListener("touchend", onTouchEnd);
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, []);
+
+  return (
+    <div
+      ref={containerRef}
+      className={`relative w-full mx-auto flex justify-center items-center text-center select-none cursor-pointer py-10 md:py-16 px-4 -my-10 md:-my-16 ${className}`}
+    >
+      {/* Foreground Content */}
+      <div className="relative w-full h-full z-0 flex flex-col justify-center items-center text-center">
+        {foreground}
+      </div>
+
+      {/* Secret Background Content revealed by Goo Mask */}
+      <div
+        className="absolute -inset-28 md:-inset-36 z-10 bg-orange text-[#131212] flex flex-col justify-center items-center text-center pointer-events-none"
+        style={{
+          mask: `url(#${maskId})`,
+          WebkitMask: `url(#${maskId})`,
+        }}
+      >
+        <div className="relative w-full h-full flex flex-col justify-center items-center text-center p-28 md:p-36">
+          {background}
+        </div>
+      </div>
+
+      {/* SVG Gooey Mask Filter Definition */}
+      <svg
+        className="absolute -inset-28 md:-inset-36 w-[calc(100%+14rem)] md:w-[calc(100%+18rem)] h-[calc(100%+14rem)] md:h-[calc(100%+18rem)] pointer-events-none z-20"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <defs>
+          <filter id={gooId}>
+            <feGaussianBlur in="SourceGraphic" stdDeviation="22" />
+            <feColorMatrix
+              type="matrix"
+              values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 60 -14"
+            />
+          </filter>
+        </defs>
+        <mask id={maskId}>
+          <g ref={maskGroupRef} filter={`url(#${gooId})`} fill="white" />
+        </mask>
+      </svg>
+    </div>
+  );
+}
+
+// ========== src\components\about\ScrollRevealText.tsx ==========
+"use client";
+
+import React, { useRef } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useGSAP } from "@gsap/react";
+import { SplitText } from "@/lib/splitText";
+
+gsap.registerPlugin(ScrollTrigger);
+
+interface ScrollRevealTextProps {
+  children: React.ReactNode;
+  colorInitial?: string;
+  colorAccent?: string;
+  colorFinal?: string;
+  triggerStart?: string;
+  triggerEnd?: string;
+  markers?: boolean;
+  inverse?: boolean;
+  triggerRef?: React.RefObject<HTMLElement | null>;
+}
+
+export default function ScrollRevealText({
+  children,
+  colorInitial = "#555555",
+  colorAccent,
+  colorFinal,
+  triggerStart = "top bottom",
+  triggerEnd = "top 25%",
+  markers = false,
+  inverse = false,
+  triggerRef,
+}: ScrollRevealTextProps) {
+  const containerRef = useRef<HTMLElement>(null);
+  const splitsRef = useRef<SplitText[]>([]);
+  const lastProgressRef = useRef(0);
+  const timeoutsRef = useRef<Map<number, NodeJS.Timeout>>(new Map());
+  const animatedSetRef = useRef<Set<number>>(new Set());
+  const triggerInstanceRef = useRef<ScrollTrigger | null>(null);
+
+  const accentColor = colorAccent || (inverse ? "#f2f2f2" : "#f93434");
+  const finalColor = colorFinal || (inverse ? "#121212" : "#f2f2f2");
+
+  useGSAP(
+    () => {
+      const container = containerRef.current;
+      if (!container) return;
+
+      // Clean up previous
+      timeoutsRef.current.forEach((t) => clearTimeout(t));
+      timeoutsRef.current.clear();
+      animatedSetRef.current.clear();
+      if (triggerInstanceRef.current) {
+        triggerInstanceRef.current.kill();
+        triggerInstanceRef.current = null;
+      }
+      splitsRef.current.forEach((s) => s.revert());
+      splitsRef.current = [];
+      lastProgressRef.current = 0;
+
+      const targetElements: HTMLElement[] = container.hasAttribute("data-copy-wrapper")
+        ? (Array.from(container.children) as HTMLElement[])
+        : [container];
+
+      const allChars: HTMLElement[] = [];
+      targetElements.forEach((el) => {
+        const existingChars = Array.from(
+          el.querySelectorAll<HTMLElement>(".char-span, .char")
+        );
+        if (existingChars.length > 0) {
+          allChars.push(...existingChars);
+        } else {
+          const split = SplitText.create(el, {
+            type: "chars",
+            wordsClass: "word",
+            charsClass: "char",
+          });
+          splitsRef.current.push(split);
+          allChars.push(...split.chars);
+        }
+      });
+
+      gsap.set(allChars, { color: colorInitial });
+
+      const triggerEl = triggerRef?.current || container;
+
+      triggerInstanceRef.current = ScrollTrigger.create({
+        trigger: triggerEl,
+        start: triggerStart,
+        end: triggerEnd,
+        markers,
+        scrub: 1,
+        onUpdate: (self) => {
+          const progress = self.progress;
+          const total = allChars.length;
+          const isForward = progress >= lastProgressRef.current;
+          const activeIndex = Math.floor(progress * total);
+
+          allChars.forEach((charEl, idx) => {
+            if (!isForward && idx >= activeIndex) {
+              if (timeoutsRef.current.has(idx)) {
+                clearTimeout(timeoutsRef.current.get(idx)!);
+                timeoutsRef.current.delete(idx);
+              }
+              animatedSetRef.current.delete(idx);
+              gsap.set(charEl, { color: colorInitial });
+              return;
+            }
+
+            if (!animatedSetRef.current.has(idx)) {
+              if (idx <= activeIndex) {
+                if (idx < activeIndex - 2 || progress >= 0.98) {
+                  gsap.set(charEl, { color: finalColor });
+                  animatedSetRef.current.add(idx);
+                } else {
+                  gsap.set(charEl, { color: accentColor });
+                  if (!timeoutsRef.current.has(idx)) {
+                    const t = setTimeout(() => {
+                      if (!animatedSetRef.current.has(idx)) {
+                        gsap.to(charEl, {
+                          duration: 0.1,
+                          ease: "none",
+                          color: finalColor,
+                          onComplete: () => {
+                            animatedSetRef.current.add(idx);
+                          },
+                        });
+                      }
+                      timeoutsRef.current.delete(idx);
+                    }, 100);
+                    timeoutsRef.current.set(idx, t);
+                  }
+                }
+              } else {
+                gsap.set(charEl, { color: colorInitial });
+              }
+            }
+          });
+
+          lastProgressRef.current = progress;
+        },
+      });
+
+      return () => {
+        timeoutsRef.current.forEach((t) => clearTimeout(t));
+        timeoutsRef.current.clear();
+        animatedSetRef.current.clear();
+        if (triggerInstanceRef.current) {
+          triggerInstanceRef.current.kill();
+          triggerInstanceRef.current = null;
+        }
+        splitsRef.current.forEach((s) => s.revert());
+      };
+    },
+    {
+      scope: containerRef,
+      dependencies: [colorInitial, accentColor, finalColor, triggerStart, triggerEnd, triggerRef],
+    }
+  );
+
+  if (React.Children.count(children) === 1 && React.isValidElement(children)) {
+    return React.cloneElement(children as React.ReactElement<any>, {
+      ref: containerRef,
+    });
+  }
+
+  return (
+    <div ref={containerRef as React.RefObject<HTMLDivElement>} data-copy-wrapper="true">
+      {children}
+    </div>
+  );
+}
+
+// ========== src\components\about\MarcusAureliusModel.tsx ==========
+"use client";
+
+import React, { useRef, useState, useEffect, useMemo, Suspense } from "react";
+import { Canvas, useFrame } from "@react-three/fiber";
+import { useGLTF, useTexture } from "@react-three/drei";
+import * as THREE from "three";
+
+interface GogglesProps {
+  position?: [number, number, number];
+  scale?: [number, number, number];
+  rotation?: [number, number, number];
+}
+
+function GogglesMesh({
+  position = [-0.06, 0.20, 0.14],
+  scale = [0.16, 0.08, 1],
+  rotation = [0, 0, 0.2],
+}: GogglesProps) {
+  const texture = useTexture("/Images/About/Goggles.webp");
+  return (
+    <mesh position={position} scale={scale} rotation={rotation} renderOrder={999}>
+      <planeGeometry args={[1, 1]} />
+      <meshBasicMaterial map={texture} transparent depthTest={false} />
+    </mesh>
+  );
+}
+
+interface MarcusModelProps {
+  containerRef?: React.RefObject<HTMLDivElement | null>;
+  position?: [number, number, number];
+  rotation?: [number, number, number];
+  scale?: number;
+  showGoggles?: boolean;
+  gogglesPosition?: [number, number, number];
+  gogglesScale?: [number, number, number];
+  gogglesRotation?: [number, number, number];
+}
+
+function MarcusModel({
+  containerRef,
+  position = [0, -0.45, 0],
+  rotation = [0, 6.5, 0],
+  scale = 3.0,
+  showGoggles = false,
+  gogglesPosition = [-0.06, 0.20, 0.14],
+  gogglesScale = [0.16, 0.08, 1],
+  gogglesRotation = [0, 0, 0.2],
+}: MarcusModelProps) {
+  const { scene } = useGLTF("/3D/marcus_aurelius.glb");
+  const groupRef = useRef<THREE.Group>(null);
+  const clonedScene = useMemo(() => scene.clone(true), [scene]);
+  const mouseOffset = useRef({ x: 0, y: 0 });
+  const targetMouseOffset = useRef({ x: 0, y: 0 });
+
+  useEffect(() => {
+    return () => {
+      clonedScene.traverse((obj) => {
+        if ("isMesh" in obj && (obj as THREE.Mesh).isMesh) {
+          const mesh = obj as THREE.Mesh;
+          mesh.geometry?.dispose();
+          if (Array.isArray(mesh.material)) {
+            mesh.material.forEach((m) => m.dispose());
+          } else if (mesh.material) {
+            mesh.material.dispose();
+          }
+        }
+      });
+    };
+  }, [clonedScene]);
+
+  useEffect(() => {
+    const el = containerRef?.current;
+    if (!el) return;
+
+    const handleMove = (e: MouseEvent) => {
+      const rect = el.getBoundingClientRect();
+      targetMouseOffset.current = {
+        y: 0.35 * ((e.clientX - rect.left) / rect.width - 0.5),
+        x: 0.25 * ((e.clientY - rect.top) / rect.height - 0.5),
+      };
+    };
+
+    const handleLeave = () => {
+      targetMouseOffset.current = { x: 0, y: 0 };
+    };
+
+    el.addEventListener("mousemove", handleMove);
+    el.addEventListener("mouseleave", handleLeave);
+    return () => {
+      el.removeEventListener("mousemove", handleMove);
+      el.removeEventListener("mouseleave", handleLeave);
+    };
+  }, [containerRef]);
+
+  useFrame(() => {
+    if (groupRef.current && containerRef?.current) {
+      const rect = containerRef.current.getBoundingClientRect();
+      const rawOffset =
+        (rect.top + rect.height / 2 - window.innerHeight / 2) * 0.0006;
+      const scrollOffset = Math.max(-0.35, Math.min(0.35, rawOffset));
+
+      mouseOffset.current.x += (targetMouseOffset.current.x - mouseOffset.current.x) * 0.08;
+      mouseOffset.current.y += (targetMouseOffset.current.y - mouseOffset.current.y) * 0.08;
+
+      const rotX = rotation[0] || 0;
+      const rotY = rotation[1] || 6.5;
+      const posY = position[1] || -0.45;
+
+      groupRef.current.position.y = posY - scrollOffset;
+      groupRef.current.rotation.x = rotX + mouseOffset.current.x;
+      groupRef.current.rotation.y = rotY + 0.35 * scrollOffset + mouseOffset.current.y;
+    }
+  });
+
+  return (
+    <group ref={groupRef} scale={scale} position={position} rotation={rotation}>
+      <primitive object={clonedScene} />
+      {showGoggles && (
+        <GogglesMesh
+          position={gogglesPosition}
+          scale={gogglesScale}
+          rotation={gogglesRotation}
+        />
+      )}
+    </group>
+  );
+}
+
+function FallbackBox({ scale = 3.0, position = [0, -0.45, 0] }: { scale?: number; position?: [number, number, number] }) {
+  const matRef = useRef<THREE.MeshStandardMaterial>(null);
+  useFrame((state) => {
+    if (matRef.current) {
+      const t = state.clock.elapsedTime;
+      matRef.current.opacity = 0.5 + 0.2 * Math.sin(3 * t);
+    }
+  });
+
+  return (
+    <mesh position={position} scale={0.8 * scale}>
+      <boxGeometry args={[1, 1.4, 0.5]} />
+      <meshStandardMaterial ref={matRef} color="#a0a0a0" transparent opacity={0.5} roughness={1} />
+    </mesh>
+  );
+}
+
+export interface MarcusAureliusModelProps {
+  containerRef?: React.RefObject<HTMLDivElement | null>;
+  className?: string;
+  showGoggles?: boolean;
+  scale?: number;
+  position?: [number, number, number];
+  rotation?: [number, number, number];
+  gogglesPosition?: [number, number, number];
+  gogglesScale?: [number, number, number];
+  gogglesRotation?: [number, number, number];
+}
+
+export default function MarcusAureliusModel({
+  containerRef,
+  className = "",
+  showGoggles = false,
+  scale = 3.0,
+  position = [0, -0.45, 0],
+  rotation = [0, 6.5, 0],
+  ...props
+}: MarcusAureliusModelProps) {
+  const [hovered, setHovered] = useState(false);
+
+  return (
+    <div
+      className={`cursor-pointer w-full h-full relative ${className}`}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      onTouchStart={() => setHovered(true)}
+      onTouchEnd={() => setHovered(false)}
+    >
+      <Canvas
+        camera={{ position: [0, 0, 3.5], fov: 45 }}
+        gl={{ alpha: true, antialias: true }}
+        className="w-full h-full"
+      >
+        <ambientLight intensity={0.9} />
+        <directionalLight position={[10, 10, 5]} intensity={1.6} />
+        <directionalLight position={[-5, -2, -2]} intensity={0.6} color="#f93434" />
+        <Suspense fallback={<FallbackBox scale={scale} position={position} />}>
+          <MarcusModel
+            containerRef={containerRef}
+            scale={scale}
+            position={position}
+            rotation={rotation}
+            showGoggles={showGoggles || hovered}
+            {...props}
+          />
+        </Suspense>
+      </Canvas>
+    </div>
+  );
+}
+
+useGLTF.preload("/3D/marcus_aurelius.glb");
+useTexture.preload("/Images/About/Goggles.webp");
