@@ -226,8 +226,8 @@ export default function ProjectsSlider() {
                 if (!vid.paused) vid.pause();
                 if (vid.preload !== "none") vid.preload = "none";
               } else {
-                // Pre-roll zone: start buffering but don't play yet
-                if (vid.preload !== "auto") vid.preload = "auto";
+                // Pre-roll zone: load metadata only (header/first frame, not full video)
+                if (vid.preload !== "metadata") vid.preload = "metadata";
               }
             }
             continue;
