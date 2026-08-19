@@ -62,8 +62,10 @@ export default function ProjectsSlider() {
 
       const isVideo =
         mediaSrc.endsWith(".mp4") || mediaSrc.endsWith(".webm");
+      // Bust cache dedup: Chrome coalesces same-URL video requests, starving the 2nd element
+      const videoSrc = side === "right" ? `${mediaSrc}?s=r` : mediaSrc;
       const mediaHtml = isVideo
-        ? `<video src="${mediaSrc}" loop muted playsinline preload="none" class="w-full h-full object-cover block will-change-transform filter grayscale contrast-110 brightness-95"></video>`
+        ? `<video src="${videoSrc}" loop muted playsinline preload="none" class="w-full h-full object-cover block will-change-transform filter grayscale contrast-110 brightness-95"></video>`
         : `<img src="${mediaSrc}" alt="${p.title}" class="w-full h-full object-cover block will-change-transform filter grayscale contrast-110 brightness-95" />`;
 
       slide.innerHTML = `
