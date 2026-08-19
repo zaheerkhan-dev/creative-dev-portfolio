@@ -223,13 +223,17 @@ export default function ProjectsSlider() {
             slide.style.clipPath = "inset(100%)";
             const vid = slide.querySelector("video") as HTMLVideoElement | null;
             if (vid) {
+              // CRITICAL: Never downgrade preload on videos with data —
+              // changing auto→metadata/none PURGES the browser buffer, causing black frames.
+              const hasData = vid.readyState >= 2;
               if (l <= -0.5 || l >= 2.5) {
-                // Far away: stop downloading and pause
+                // Far away: pause to stop playback (preserves buffer)
                 if (!vid.paused) vid.pause();
-                if (vid.preload !== "none") vid.preload = "none";
+                // Only downgrade preload on videos with no data yet
+                if (!hasData && vid.preload !== "none") vid.preload = "none";
               } else {
-                // Pre-roll zone: load metadata only (header/first frame, not full video)
-                if (vid.preload !== "metadata") vid.preload = "metadata";
+                // Pre-roll zone: start loading if not loaded yet
+                if (!hasData && vid.preload === "none") vid.preload = "auto";
               }
             }
             continue;
