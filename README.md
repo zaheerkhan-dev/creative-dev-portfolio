@@ -1,8 +1,12 @@
-# 🌌 Zaheer Khan — Creative Developer Portfolio
+# 🌌 Zaheer Khan — Creative Developer Portfolio (Code Study)
 
-An award-winning caliber, high-performance creative developer portfolio built with **Next.js 15 (App Router)**, **Three.js & React Three Fiber**, **GSAP (ScrollTrigger & SplitText)**, **Lenis Smooth Scroll**, **Tailwind CSS**, and interactive **Web Audio Sound Effects**.
+> **Note on Design & Code Study**:  
+> This project is an independent technical recreation and code study of **[Nikhil Dhakad](https://www.linkedin.com/in/nikhil-dhakad/)**'s creative portfolio design. Built 100% from scratch in **Next.js 15 (App Router)**, **Three.js & React Three Fiber**, and **GSAP** by [Zaheer Khan](https://github.com/zaheerkhan-dev) as a deep-dive engineering exercise to master WebGL shaders, particle physics, 3D model orchestration, polygon clipping math, and zero-latency audio pooling.  
+> 
+> *All source code, performance pipelines, video synchronization engines, and case study content are custom-engineered from the ground up.*
 
-🔗 **Live Demo**: [https://zaheerkhan-portfolio.pages.dev](https://zaheerkhan-portfolio.pages.dev)
+🔗 **Live Demo**: [https://zaheerkhan-portfolio.pages.dev](https://zaheerkhan-portfolio.pages.dev)  
+🎨 **Design Inspiration & Original Concept**: [Nikhil Dhakad](https://www.linkedin.com/in/nikhil-dhakad/)
 
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-zaheerkhan--portfolio.pages.dev-orange?style=for-the-badge&logo=cloudflare-pages&logoColor=white)](https://zaheerkhan-portfolio.pages.dev)
 [![Next.js](https://img.shields.io/badge/Next.js-15.2.1-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
@@ -24,7 +28,7 @@ An award-winning caliber, high-performance creative developer portfolio built wi
 ### 2. 🏛️ About Page & 3D Interactive Roman Bust (`/about`)
 - **Organic SVG Bottom Wave Morphing**: Custom SVG clip-path dynamically morphing curve geometry on scroll with GSAP ScrollTrigger.
 - **Interactive Smudge Mask Reveals**: Two-tier cursor smudge mask revealing contrasting philosophies.
-- **What I Do Dynamic Slider**: 12 categorized rolling capability cards with horizontal drag mechanics.
+- **What I Do Dynamic Slider**: 13 categorized rolling capability cards (SaaS development, AI workflows, WebGL, CMS, APIs, etc.) with horizontal drag mechanics.
 - **Circular Testimonials Dial**: Arc mathematics (`sin`/`cos`) arranging reviewer avatars on a dynamic radius dial with autoplay rotation and modal review inspection.
 - **3D Marcus Aurelius Bust**: Three.js & React Three Fiber GLTF model with real-time mouse/scroll parallax tracking, dual-lighting, and interactive sunglasses overlay.
 
